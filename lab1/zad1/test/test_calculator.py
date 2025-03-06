@@ -1,5 +1,6 @@
 import unittest
-from src.calculator import Kalkulator
+from zad1.src.calculator import Kalkulator
+
 
 class TestKalkulator(unittest.TestCase):
     def setUp(self):
@@ -10,7 +11,7 @@ class TestKalkulator(unittest.TestCase):
 
     def test_odejmowanie(self):
         self.assertEqual(self.kalku.odejmowanie(-1, 9), 19)
-    
+
     def test_mnozenie(self):
         self.assertEqual(self.kalku.mnozenie(3, 4), 12)
 
