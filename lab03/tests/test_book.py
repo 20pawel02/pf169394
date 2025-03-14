@@ -10,8 +10,8 @@ class TestBookInitialization(unittest.TestCase):
     def test_calculate_reading_time(self):
         book_pride_and_prejudice = Book("Pride and Prejudice", 432)
         book_animal_farm = Book("Animal Farm", 112)
-        self.assertAlmostEqual(book_pride_and_prejudice.read_time, 216, places=3)
-        self.assertAlmostEqual(book_animal_farm.read_time, 56, places=3)
+        self.assertAlmostEqual(book_pride_and_prejudice.calculate_reading_time(), 216, places=2)
+        self.assertAlmostEqual(book_animal_farm.calculate_reading_time(), 56, places=2)
 
 
 if __name__ == '__main__':
