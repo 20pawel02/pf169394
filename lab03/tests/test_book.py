@@ -1,6 +1,7 @@
 import unittest
 from src.book import Book
 
+
 class TestBookInitialization(unittest.TestCase):
     """Test cases for the Book class initialization and methods."""
 
@@ -37,8 +38,20 @@ class TestBookInitialization(unittest.TestCase):
         book = Book("test_book", 10)
         with self.assertRaises(ValueError) as context:
             book.add_author(" ")
-            book.add_author("")
         self.assertEqual(str(context.exception), "Author name cannot be empty")
+
+    def test_calculate_reading_time_zero_pages(self):
+        """Test the calculate_reading_time method for a book with 0 pages."""
+        book = Book("Empty Book", 0)
+        self.assertEqual(book.calculate_reading_time(), 0)
+
+    def test_add_same_author_multiple_times(self):
+        """Test that adding the same author multiple times results in multiple entries."""
+        book = Book("Repeated Author Book", 100)
+        book.add_author("Jane Austen")
+        book.add_author("Jane Austen")
+        self.assertEqual(book.authors.count("Jane Austen"), 2)
+
 
 if __name__ == '__main__':
     unittest.main()
