@@ -16,11 +16,11 @@ class TestBookInitialization(unittest.TestCase):
     def test_add_author(self):
         book_pride_and_prejudice = Book("Pride and Prejudice", 432)
         book_pride_and_prejudice.add_author("Jane Austen")
-        self.assertEqual("Jane Austen", book_pride_and_prejudice.authors)
+        self.assertEqual(book_pride_and_prejudice.authors, ["Jane Austen"])
 
     def test_add_mutlti_authors(self):
         book = Book("test1", 73)
-        authors = ["George Orwell”, “Aldous Huxley”, “Ray Bradbury"]
+        authors = ["George Orwell", "Aldous Huxley", "Ray Bradbury"]
         for author in authors:
             book.add_author(author)
         for author in authors:
@@ -31,7 +31,7 @@ class TestBookInitialization(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             book.add_author(" ")
             book.add_author("")
-        self.assertEqual(str(context.exception), "Autor nie moze byc pusty")
+        self.assertEqual(str(context.exception), "Author name cannot be empty")
 
 if __name__ == '__main__':
     unittest.main()
