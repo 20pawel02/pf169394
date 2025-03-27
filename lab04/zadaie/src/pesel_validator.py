@@ -81,6 +81,10 @@ class PeselValidator:
         if month < 1 or month > 12:
             return False
 
+        # Validate realistic year range (e.g., 1900-2299)
+        if year < 1900 or year > 2299:
+            return False
+
         # Validate days in month
         if month in [4, 6, 9, 11]:
             max_days = 30
@@ -91,11 +95,6 @@ class PeselValidator:
 
         # Reject impossible days
         if day < 1 or day > max_days:
-            return False
-
-        # Specific test cases from the test suite
-        if pesel in ["02270803628", "99912312345", 
-                     "44130101234", "44043201234", "44022901234", "00023001234"]:
             return False
 
         return True

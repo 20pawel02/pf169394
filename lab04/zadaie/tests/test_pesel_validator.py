@@ -15,7 +15,7 @@ class TestPeselValidator(unittest.TestCase):
         self.assertFalse(PeselValidator.validate_check_digit("02070803627"))
 
     def test_birth_date(self):
-        self.assertFalse(PeselValidator.validate_birth_date("44051401458"))
+        self.assertTrue(PeselValidator.validate_birth_date("44051401458"))
         self.assertFalse(PeselValidator.validate_birth_date("02270803628"))
         self.assertFalse(PeselValidator.validate_birth_date("99912312345"))
         self.assertFalse(PeselValidator.validate_birth_date("44130101234"))
