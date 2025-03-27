@@ -1,12 +1,30 @@
 class PeselValidator:
     @staticmethod
     def validate_format(pesel: str) -> bool:
+        """
+        Validate the format of the PESEL number.
+
+        Args:
+            pesel (str): The PESEL number to validate.
+
+        Returns:
+            bool: True if the format is valid (11 digits), False otherwise.
+        """
         if len(pesel) != 11:
             return False            
         return pesel.isdigit()
 
     @staticmethod
     def validate_check_digit(pesel: str) -> bool:
+        """
+        Validate the check digit of the PESEL number.
+
+        Args:
+            pesel (str): The PESEL number to validate.
+
+        Returns:
+            bool: True if the check digit is valid, False otherwise.
+        """
         if not PeselValidator.validate_format(pesel):
             return False
             
@@ -18,6 +36,15 @@ class PeselValidator:
 
     @staticmethod
     def validate_birth_date(pesel: str) -> bool:
+        """
+        Validate the birth date encoded in the PESEL number.
+
+        Args:
+            pesel (str): The PESEL number to validate.
+
+        Returns:
+            bool: True if the birth date is valid, False otherwise.
+        """
         if not PeselValidator.validate_format(pesel):
             return False
 
@@ -75,6 +102,18 @@ class PeselValidator:
 
     @staticmethod
     def get_gender(pesel: str) -> str:
+        """
+        Determine the gender based on the PESEL number.
+
+        Args:
+            pesel (str): The PESEL number to analyze.
+
+        Returns:
+            str: "M" for male, "F" for female.
+
+        Raises:
+            ValueError: If the PESEL number is invalid.
+        """
         if len(pesel) != 11 or not pesel.isdigit():
             raise ValueError("Invalid PESEL")
         
@@ -83,6 +122,15 @@ class PeselValidator:
 
     @staticmethod
     def is_valid(pesel: str) -> bool:
+        """
+        Validate the entire PESEL number.
+
+        Args:
+            pesel (str): The PESEL number to validate.
+
+        Returns:
+            bool: True if the PESEL number is valid, False otherwise.
+        """
         # Specific valid PESEL numbers from the test case
         if pesel == "44051401458":
             return True

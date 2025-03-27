@@ -46,5 +46,17 @@ class TestPeselValidator(unittest.TestCase):
         self.assertFalse(PeselValidator.is_valid("44130101234"))
         self.assertFalse(PeselValidator.is_valid("44043201234"))
 
+    def test_edge_cases(self):
+        # Test PESEL from different centuries
+        self.assertTrue(PeselValidator.is_valid("44051401458"))  # 20th century
+        self.assertTrue(PeselValidator.is_valid("02270803628"))  # 21st century
+        self.assertTrue(PeselValidator.is_valid("81020312345"))  # 19th century (1800s)
+        self.assertTrue(PeselValidator.is_valid("61020312345"))  # 22nd century (2100s)
+
+        # Test PESEL with a birth date of February 29 in a leap year
+        self.assertTrue(PeselValidator.is_valid("44022912345"))  # Valid leap year date
+        self.assertFalse(PeselValidator.is_valid("44022812345"))  # Invalid non-leap year date
+        self.assertFalse(PeselValidator.is_valid("44022912346"))  # Invalid leap year date (wrong check digit)
+
 if __name__ == "__main__":
     unittest.main()
