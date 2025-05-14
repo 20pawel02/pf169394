@@ -27,7 +27,7 @@ class ReservationManagement:
             raise ValueError("Date must be a valid string in 'YYYY-MM-DD' format.")
         if not re.match(r'^\d{4}-\d{2}-\d{2}$', date):
             raise ValueError("Date must be a valid string in 'YYYY-MM-DD' format.")
-        if not isinstance(beds, int) or beds < 1:
+        if not beds or not isinstance(beds, int) or beds < 0:
             raise ValueError("Number of beds must be a valid integer.")
 
         # checking conflicting reservations
