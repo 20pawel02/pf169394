@@ -5,10 +5,10 @@ class User:
         self.password = password
         self.reservations = []
 
-
 class UserManagement:
-    def __init__(self) -> None:
+    def __init__(self):
         self.users = {}
+        self.next_id = 1
 
     def addUser(self, email: str, password: str):
         # chceck if user already exists
@@ -19,13 +19,14 @@ class UserManagement:
         # input validation
         if not email or not isinstance(email, str):
             raise ValueError("Email must be a valid string.")
-        if len(password) < 8:
+        if not password or not isinstance(password, str) or len(password) < 8:
             raise ValueError("Password must be longer than 8 characters.")
 
         # creating user
-        userID = len(self.users) + 1
-        self.users[userID] = User(userID, email, password)
-        return userID
+        user_id = self.next_id
+        self.users[user_id] = User(user_id, email, password)
+        self.next_id += 1
+        return user_id
 
     def updateUser(self, id: int, email: str, password: str):
         # check if user exists
