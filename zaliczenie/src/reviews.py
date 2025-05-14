@@ -16,7 +16,7 @@ class Reviews:
         if not id or not isinstance(id, int) or id < 0:
             raise ValueError("User ID must be a valid integer.")
         if not stars or not isinstance(stars, int) or stars <= 0 or stars > 5:
-            raise ValueError("Stars must be a positive integer bigger than 0 and lower than 5.")
+            raise ValueError("Stars must be a valid integer between 1 and 5.")
         if not comment or not isinstance(comment, str):
             raise ValueError("Comment must be a string.")
 
