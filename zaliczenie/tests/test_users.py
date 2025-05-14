@@ -179,3 +179,67 @@ class TestComplexScenarios:
         manager.deleteUser(id1)
         id2 = manager.addUser("user@mail.com", "password123")
         assert id1 != id2
+
+
+class TestReservationIntegration:
+    def test_user_with_no_reservations(self, manager):
+        user_id = manager.addUser("user@mail.com", "password123")
+        assert len(manager.users[user_id].reservations) == 0
+
+    def test_user_with_reservations_cannot_be_deleted(self, manager):
+        user_id = manager.addUser("user@mail.com", "password123")
+        manager.users[user_id].reservations.append("reservation1")
+        manager.users[user_id].reservations.append("reservation2")
+        with pytest.raises(ValueError, match="User have existing reservations."):
+            manager.deleteUser(user_id)
+        assert len(manager.users[user_id].reservations) == 2
+
+    def test_delete_user_after_reservation_removal(self, manager):
+        user_id = manager.addUser("user@mail.com", "password123")
+        manager.users[user_id].reservations.append("reservation1")
+        manager.users[user_id].reservations.pop()  # Remove the reservation
+        manager.deleteUser(user_id)
+        assert manager.getUser(user_id) is None
+
+
+class TestUserStateManagement:
+    def test_next_id_increment(self, manager):
+        initial_next_id = manager.next_id
+        manager.addUser("user1@mail.com", "password123")
+        assert manager.next_id == initial_next_id + 1
+
+    def test_next_id_after_deletion(self, manager):
+        id1 = manager.addUser("user1@mail.com", "password123")
+        initial_next_id = manager.next_id
+        manager.deleteUser(id1)
+        assert manager.next_id == initial_next_id
+
+    def test_user_count(self, manager):
+        initial_count = len(manager.users)
+        manager.addUser("user1@mail.com", "password123")
+        manager.addUser("user2@mail.com", "password123")
+        assert len(manager.users) == initial_count + 2
+
+    def test_user_count_after_deletion(self, manager):
+        manager.addUser("user1@mail.com", "password123")
+        manager.addUser("user2@mail.com", "password123")
+        initial_count = len(manager.users)
+        manager.deleteUser(1)
+        assert len(manager.users) == initial_count - 1
+
+
+class TestEdgeCases:
+    def test_update_user_same_email(self, manager):
+        user_id = manager.addUser("user@mail.com", "password123")
+        manager.updateUser(user_id, "user@mail.com", "newpassword123")
+        assert manager.users[user_id].email == "user@mail.com"
+        assert manager.users[user_id].password == "newpassword123"
+
+    def test_get_user_with_none_id(self, manager):
+        assert manager.getUser(None) is None
+
+    def test_get_user_with_zero_id(self, manager):
+        assert manager.getUser(0) is None
+
+    def test_get_user_with_negative_id(self, manager):
+        assert manager.getUser(-1) is None
