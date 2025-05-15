@@ -17,6 +17,8 @@ class ReservationManagement:
 
     def booking(self, id: int, user: str, date: str, beds: int):
         # input validation
+        if not id or not isinstance(id, int) or id <= 0:
+            raise ValueError("User ID must be a valid integer.")
         if not user or not isinstance(user, str):
             raise ValueError("User name must be a valid string.")
         if not re.match(r'^[a-zA-Z0-9]+$', user):

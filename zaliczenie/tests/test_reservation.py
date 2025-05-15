@@ -67,6 +67,25 @@ class TestBaseFunctions:
     def test_userReservation(self, manager):
         manager.booking(1, "user1", "2026-03-01", 1)
         assert manager.userReservation(1)
+        
+    def test_userReservation_no_bookings(self, manager):
+        result = manager.userReservation(1)
+        assert len(result) == 0
+
+    def test_userReservation_multiple_dates(self, manager):
+        manager.booking(1, "user1", "2026-03-01", 1)
+        manager.booking(1, "user1", "2026-03-02", 2)
+        manager.booking(1, "user1", "2026-03-03", 3)
+        result = manager.userReservation(1)
+        assert len(result) == 3
+        assert all(r.user == "user1" for r in result)
+
+    def test_userReservation_after_cancellation(self, manager):
+        manager.booking(1, "user1", "2026-03-01", 1)
+        manager.booking(1, "user1", "2026-03-02", 2)
+        manager.cancelBooking(1)
+        result = manager.userReservation(1)
+        assert len(result) == 1
 
 
 class TestInvalidInputs:
@@ -88,7 +107,11 @@ class TestInvalidInputs:
 
     def test_valid_id4(self, manager):
         with pytest.raises(ValueError, match="User ID must be a valid integer."):
-            manager.booking("!@#$%", "user1", "2026-03-01", 1)
+            manager.booking(None, "user1", "2026-03-01", 1)
+            
+    def test_userReservation_invalid_id_type(self, manager):
+        with pytest.raises(ValueError, match="User ID must be a valid integer."):
+            manager.userReservation("invalid")
 
     def test_valid_username(self, manager):
         with pytest.raises(ValueError, match="User name must be a valid string."):
@@ -99,13 +122,17 @@ class TestInvalidInputs:
             manager.booking(1, "user@name", "2026-03-01", 1)
 
     def test_valid_username2(self, manager):
-        with pytest.raises(ValueError, match="User name must contain only letters and numbers."):
-            manager.booking(1, "!@#$%", "2026-03-01", 1)
+        with pytest.raises(ValueError, match="User name must be a valid string."):
+            manager.booking(1, None, "2026-03-01", 1)
 
     def test_valid_username3(self, manager):
-        with pytest.raises(ValueError, match="User name must contain only letters and numbers."):
-            manager.booking(1, "user#$%", "2026-03-01", 1)
+        with pytest.raises(ValueError, match="User name must be a valid string."):
+            manager.booking(1, "", "2026-03-01", 1)
 
+    def test_invalid_date(self, manager):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
+            manager.booking(1, "user1", None, 1)
+            
     def test_valid_date_format(self, manager):
         with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
             manager.booking(1, "user1", "2026/03/01", 1)
@@ -157,9 +184,25 @@ class TestInvalidInputs:
     def test_valid_beds6(self, manager):
         with pytest.raises(ValueError, match="Number of beds must be a valid integer."):
             manager.booking(1, "user1", "2026-03-01", "!@#$")
+            
+    def test_booking_none_date(self, manager):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
+            manager.booking(1, "user1", None, 1)
+
+    def test_booking_empty_date(self, manager):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
+            manager.booking(1, "user1", "", 1)
+
+    def test_booking_none_user(self, manager):
+        with pytest.raises(ValueError, match="User name must be a valid string."):
+            manager.booking(1, None, "2026-03-01", 1)
+
+    def test_booking_empty_user(self, manager):
+        with pytest.raises(ValueError, match="User name must be a valid string."):
+            manager.booking(1, "", "2026-03-01", 1)
 
 
-class TestReservationEdgeCases:
+class TestEdgeCases:
     def test_cancel_nonexistent_booking(self, manager):
         assert manager.cancelBooking(999) == False
 
@@ -178,46 +221,3 @@ class TestReservationEdgeCases:
         manager.booking(1, "user1", "2026-03-01", 1)
         manager.booking(2, "user2", "2026-03-01", 1)
         assert len(manager.reservations) == 2
-
-
-class TestReservationValidation:
-    def test_booking_none_date(self, manager):
-        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
-            manager.booking(1, "user1", None, 1)
-
-    def test_booking_empty_date(self, manager):
-        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
-            manager.booking(1, "user1", "", 1)
-
-    def test_booking_none_user(self, manager):
-        with pytest.raises(ValueError, match="User name must be a valid string."):
-            manager.booking(1, None, "2026-03-01", 1)
-
-    def test_booking_empty_user(self, manager):
-        with pytest.raises(ValueError, match="User name must be a valid string."):
-            manager.booking(1, "", "2026-03-01", 1)
-
-
-class TestUserReservationQueries:
-    def test_userReservation_invalid_id_type(self, manager):
-        with pytest.raises(ValueError, match="User ID must be a valid integer."):
-            manager.userReservation("invalid")
-
-    def test_userReservation_no_bookings(self, manager):
-        result = manager.userReservation(1)
-        assert len(result) == 0
-
-    def test_userReservation_multiple_dates(self, manager):
-        manager.booking(1, "user1", "2026-03-01", 1)
-        manager.booking(1, "user1", "2026-03-02", 2)
-        manager.booking(1, "user1", "2026-03-03", 3)
-        result = manager.userReservation(1)
-        assert len(result) == 3
-        assert all(r.user == "user1" for r in result)
-
-    def test_userReservation_after_cancellation(self, manager):
-        manager.booking(1, "user1", "2026-03-01", 1)
-        manager.booking(1, "user1", "2026-03-02", 2)
-        manager.cancelBooking(1)
-        result = manager.userReservation(1)
-        assert len(result) == 1
