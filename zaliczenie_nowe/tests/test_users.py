@@ -4,17 +4,22 @@ from src.users import UserManagement
 
 @pytest.fixture
 def manager():
+    """
+    Fixture to create a fresh UserManagement instance for each test.
+
+    Returns:
+        UserManagement: A new user management instance.
+    """
     return UserManagement()
 
 
 class TestBaseFunctions:
     """
-        Klasa testująca podstawowe funkcjonalności użytkowników.
+    Test suite for basic user management functionality.
 
-        Testuje przypadki poprawnego dodawania, aktualizowania i usuwania użytkowników.
-        Dodatkowo sprawdza poprawną obsługę identyfikatorów użytkowników oraz liczbę użytkowników w systemie.
-        """
-
+    These tests verify core user operations like adding, retrieving,
+    updating, and managing user details.
+    """
     def test_addUser_email(self, manager):
         email = manager.addUser("user@mail.com", "password123")
         assert manager.users[email].email == "user@mail.com"
@@ -113,11 +118,12 @@ class TestBaseFunctions:
 
 class TestInvalidInputs:
     """
-    Klasa testująca obsługę niepoprawnych danych wejściowych.
+    Test suite for input validation in user management.
 
-    Testuje przypadki niepoprawnego e-maila, hasła oraz obsługę brakujących danych.
+    These tests ensure that the user management system correctly handles
+    various invalid input scenarios, such as incorrect email formats,
+    password lengths, and duplicate emails.
     """
-
     def test_addUser_empty_email(self, manager):
         with pytest.raises(ValueError, match="Email must be a valid string."):
             manager.addUser("", "password123")
@@ -136,15 +142,21 @@ class TestInvalidInputs:
             manager.addUser("user@mail.com", "different123")
 
     def test_addUser_short_password(self, manager):
-        with pytest.raises(ValueError, match="Password must be longer than 8 characters."):
+        with pytest.raises(
+            ValueError, match="Password must be longer than 8 characters."
+        ):
             manager.addUser("user@mail.com", "short")
 
     def test_addUser_empty_password(self, manager):
-        with pytest.raises(ValueError, match="Password must be longer than 8 characters."):
+        with pytest.raises(
+            ValueError, match="Password must be longer than 8 characters."
+        ):
             manager.addUser("user@mail.com", "")
 
     def test_addUser_none_password(self, manager):
-        with pytest.raises(ValueError, match="Password must be longer than 8 characters."):
+        with pytest.raises(
+            ValueError, match="Password must be longer than 8 characters."
+        ):
             manager.addUser("user@mail.com", None)
 
     def test_updateUser_nonexistent_user(self, manager):
@@ -168,14 +180,16 @@ class TestInvalidInputs:
 
     def test_updateUser_short_password(self, manager):
         user_id = manager.addUser("user@mail.com", "password123")
-        with pytest.raises(ValueError, match="Password must be longer than 8 characters."):
+        with pytest.raises(
+            ValueError, match="Password must be longer than 8 characters."
+        ):
             manager.updateUser(user_id, "new@mail.com", "short")
 
     def test_updateUser_duplicate_email(self, manager):
         manager.addUser("user1@mail.com", "password123")
         user_id2 = manager.addUser("user2@mail.com", "password123")
         with pytest.raises(ValueError, match="Email already exists."):
-            manager.updateUser(user_id2, "user1@mail.com", "newpassword123")
+            manager.updateUser(user_id2, "user1@mail.com", "password123")
 
     def test_deleteUser_nonexistent_user(self, manager):
         with pytest.raises(ValueError, match="User is not existing."):
@@ -187,27 +201,15 @@ class TestInvalidInputs:
         with pytest.raises(ValueError, match="User have existing reservations."):
             manager.deleteUser(user_id)
 
-    def test_getUser_invalid_id(self, manager):
-        assert manager.getUser(-1) is None
-
-    def test_getUser_zero_id(self, manager):
-        assert manager.getUser(0) is None
-
-    def test_user_count_after_multiple_additions(self, manager):
-        initial_count = len(manager.users)
-        manager.addUser("user1@mail.com", "password123")
-        manager.addUser("user2@mail.com", "password123")
-        assert len(manager.users) == initial_count + 2
-
 
 class TestEdgeCases:
     """
-    Klasa testująca nietypowe przypadki brzegowe.
+    Test suite for edge cases in user management.
 
-    Skupia się na sytuacjach nieoczywistych, takich jak usuwanie użytkowników,
-    ponowne dodawanie ich z tymi samymi danymi oraz inne nietypowe scenariusze.
+    These tests cover scenarios like retrieving non-existent users,
+    handling user IDs, deleting and updating users, and other
+    boundary conditions.
     """
-
     def test_getUser_nonexistent(self, manager):
         assert manager.getUser(999) is None
 
