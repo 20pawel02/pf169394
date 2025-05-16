@@ -4,10 +4,23 @@ from src.reviews import Reviews
 
 @pytest.fixture
 def manager():
+    """
+    Fixture to create a fresh Reviews instance for each test.
+
+    Returns:
+        Reviews: A new reviews management instance.
+    """
     return Reviews()
 
 
 class TestBaseFunctions:
+    """
+    Test suite for basic review management functionality.
+
+    These tests verify core review operations like adding, editing,
+    deleting, and retrieving reviews.
+    """
+
     def test_add_review(self, manager):
         manager.add_review(1, 5, "comment1")
         assert manager.reviews_list[1].stars == 5
@@ -31,6 +44,14 @@ class TestBaseFunctions:
 
 
 class TestInvalidInputs:
+    """
+    Test suite for input validation in review management.
+
+    These tests ensure that the review system correctly handles
+    various invalid input scenarios, such as incorrect user IDs,
+    star ratings, and comments.
+    """
+
     def test_invalid_id(self, manager):
         with pytest.raises(ValueError, match="User ID must be a valid integer."):
             manager.add_review("invalid", 5, "comment1")
@@ -52,23 +73,33 @@ class TestInvalidInputs:
             manager.add_review(None, 5, "comment1")
 
     def test_invalid_star(self, manager):
-        with pytest.raises(ValueError, match="Stars must be a valid integer between 1 and 5."):
+        with pytest.raises(
+            ValueError, match="Stars must be a valid integer between 1 and 5."
+        ):
             manager.add_review(1, 6, "comment1")
 
     def test_invalid_star1(self, manager):
-        with pytest.raises(ValueError, match="Stars must be a valid integer between 1 and 5."):
+        with pytest.raises(
+            ValueError, match="Stars must be a valid integer between 1 and 5."
+        ):
             manager.add_review(1, -1, "comment1")
 
     def test_invalid_star2(self, manager):
-        with pytest.raises(ValueError, match="Stars must be a valid integer between 1 and 5."):
+        with pytest.raises(
+            ValueError, match="Stars must be a valid integer between 1 and 5."
+        ):
             manager.add_review(1, 0, "comment1")
 
     def test_invalid_star3(self, manager):
-        with pytest.raises(ValueError, match="Stars must be a valid integer between 1 and 5."):
+        with pytest.raises(
+            ValueError, match="Stars must be a valid integer between 1 and 5."
+        ):
             manager.add_review(1, 1.5, "comment1")
 
     def test_invalid_star4(self, manager):
-        with pytest.raises(ValueError, match="Stars must be a valid integer between 1 and 5."):
+        with pytest.raises(
+            ValueError, match="Stars must be a valid integer between 1 and 5."
+        ):
             manager.add_review(1, None, "comment1")
 
     def test_invalid_comment(self, manager):
@@ -85,13 +116,20 @@ class TestInvalidInputs:
 
 
 class TestEdgeCases:
+    """
+    Test suite for edge cases in review management.
+
+    These tests cover scenarios like retrieving, deleting, and editing
+    non-existent reviews, and other boundary conditions.
+    """
+
     def test_get_nonexistent_review(self, manager):
         assert manager.get_review(999) is None
-        
+
     def test_delete_nonexistent_review(self, manager):
         manager.delete_review(999)
         assert 999 not in manager.reviews_list
-        
+
     def test_edit_nonexistent_review(self, manager):
         # Should not raise an error or modify anything
         manager.edit_review(999, 4, "new comment")
