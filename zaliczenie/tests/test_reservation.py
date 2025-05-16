@@ -214,7 +214,7 @@ class TestEdgeCases:
 
     def test_booking_same_user_same_date(self, manager):
         manager.booking(1, "user1", "2026-03-01", 1)
-        with pytest.raises(ValueError, match="User 1 user1 already booked room\(s\) on 2026-03-01."):
+        with pytest.raises(ValueError, match="User 1 user1 already booked room on 2026-03-01."):
             manager.booking(1, "user1", "2026-03-01", 2)
 
     def test_booking_different_users_same_date(self, manager):

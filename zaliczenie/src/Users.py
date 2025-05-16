@@ -5,6 +5,7 @@ class User:
         self.password = password
         self.reservations = []
 
+
 class UserManagement:
     def __init__(self):
         self.users = {}

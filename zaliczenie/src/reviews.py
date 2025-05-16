@@ -44,7 +44,6 @@ class Reviews:
 
     def delete_review(self, id: int):
         if id not in self.reviews_list:
-            #raise ValueError(f"Review {id} wasn't found.")
             return
         del self.reviews_list[id]
 
