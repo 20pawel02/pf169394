@@ -157,6 +157,7 @@ class TestInvalidInputs:
     def test_valid_beds6(self, manager):
         with pytest.raises(ValueError, match="Number of beds must be a valid integer."):
             manager.booking(1, "user1", "2026-03-01", "!@#$")
+<<<<<<< HEAD:zaliczenie_nowe/tests/test_reservation.py
 
 
 class TestReservationEdgeCases:
@@ -168,6 +169,67 @@ class TestReservationEdgeCases:
         initial_count = len(manager.reservations)
         manager.cancelBooking(1)
         assert len(manager.reservations) == initial_count - 1
+
+    def test_booking_different_users_same_date(self, manager):
+        manager.booking(1, "user1", "2026-03-01", 1)
+        manager.booking(2, "user2", "2026-03-01", 1)
+        assert len(manager.reservations) == 2
+
+
+class TestReservationValidation:
+    def test_booking_none_date(self, manager):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
+            manager.booking(1, "user1", None, 1)
+
+    def test_booking_empty_date(self, manager):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
+            manager.booking(1, "user1", "", 1)
+
+    def test_booking_none_user(self, manager):
+        with pytest.raises(ValueError, match="User name must be a valid string."):
+            manager.booking(1, None, "2026-03-01", 1)
+
+    def test_booking_empty_user(self, manager):
+        with pytest.raises(ValueError, match="User name must be a valid string."):
+            manager.booking(1, "", "2026-03-01", 1)
+
+
+class TestUserReservationQueries:
+    def test_userReservation_invalid_id_type(self, manager):
+        with pytest.raises(ValueError, match="User ID must be a valid integer."):
+            manager.userReservation("invalid")
+=======
+
+
+class TestReservationEdgeCases:
+    def test_cancel_nonexistent_booking(self, manager):
+        assert manager.cancelBooking(999) == False
+>>>>>>> parent of 1d01520 (final):zaliczenie/tests/test_reservation.py
+
+    def test_userReservation_no_bookings(self, manager):
+        result = manager.userReservation(1)
+        assert len(result) == 0
+
+    def test_userReservation_multiple_dates(self, manager):
+        manager.booking(1, "user1", "2026-03-01", 1)
+        manager.booking(1, "user1", "2026-03-02", 2)
+        manager.booking(1, "user1", "2026-03-03", 3)
+        result = manager.userReservation(1)
+        assert len(result) == 3
+        assert all(r.user == "user1" for r in result)
+
+    def test_userReservation_after_cancellation(self, manager):
+        manager.booking(1, "user1", "2026-03-01", 1)
+        manager.booking(1, "user1", "2026-03-02", 2)
+        manager.cancelBooking(1)
+<<<<<<< HEAD:zaliczenie_nowe/tests/test_reservation.py
+=======
+        assert len(manager.reservations) == initial_count - 1
+
+    def test_booking_same_user_same_date(self, manager):
+        manager.booking(1, "user1", "2026-03-01", 1)
+        with pytest.raises(ValueError, match="User 1 user1 already booked room\(s\) on 2026-03-01."):
+            manager.booking(1, "user1", "2026-03-01", 2)
 
     def test_booking_different_users_same_date(self, manager):
         manager.booking(1, "user1", "2026-03-01", 1)
@@ -214,5 +276,6 @@ class TestUserReservationQueries:
         manager.booking(1, "user1", "2026-03-01", 1)
         manager.booking(1, "user1", "2026-03-02", 2)
         manager.cancelBooking(1)
+>>>>>>> parent of 1d01520 (final):zaliczenie/tests/test_reservation.py
         result = manager.userReservation(1)
         assert len(result) == 1

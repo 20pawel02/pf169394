@@ -41,6 +41,8 @@ class TestBaseFunctions:
         assert review.stars == 5
         assert review.comment == "comment1"
 
+        # Test getting a non-existent review
+        assert manager.get_review(999) is None
 
 class TestInvalidInputs:
     """
@@ -62,14 +64,6 @@ class TestInvalidInputs:
         with pytest.raises(ValueError, match="User ID must be a valid integer."):
             manager.add_review(0, 5, "comment1")
 
-    def test_invalid_id3(self, manager):
-        with pytest.raises(ValueError, match="User ID must be a valid integer."):
-            manager.add_review(1.5, 5, "comment1")
-
-    def test_invalid_id4(self, manager):
-        with pytest.raises(ValueError, match="User ID must be a valid integer."):
-            manager.add_review(None, 5, "comment1")
-
     def test_invalid_star(self, manager):
         with pytest.raises(
             ValueError, match="Stars must be a valid integer between 1 and 5."
@@ -83,6 +77,7 @@ class TestInvalidInputs:
             manager.add_review(1, -1, "comment1")
 
     def test_invalid_star2(self, manager):
+<<<<<<< HEAD
         with pytest.raises(
             ValueError, match="Stars must be a valid integer between 1 and 5."
         ):
@@ -131,3 +126,7 @@ class TestEdgeCases:
         # Should not raise an error or modify anything
         manager.edit_review(999, 4, "new comment")
         assert 999 not in manager.reviews_list
+=======
+        with pytest.raises(ValueError, match="Stars must be a valid integer between 1 and 5."):
+            manager.add_review(1, 0, "comment1")
+>>>>>>> parent of 1d01520 (final)
