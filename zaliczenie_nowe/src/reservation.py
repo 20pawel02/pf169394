@@ -68,7 +68,7 @@ class ReservationManagement:
                 and existing_reservation.user == user
                 and existing_reservation.date == date
             ):
-                raise ValueError(f"User {id} {user} already booked room(s) on {date}.")
+                raise ValueError("User already booked room(s) on this date.")
 
         # creating new reservation id
         newID = len(self.reservations) + 1

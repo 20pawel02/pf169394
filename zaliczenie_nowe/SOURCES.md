@@ -3,5 +3,4 @@
 - Kod wygenerowany przez: Cascade Base
 - Data: 16.05.2025
 - Prompt: generate doc strings for functions and classes
-- Modyfikacje: dodano doc stringi dla klas w folderach src/ oraz tests/
-s
+- Modyfikacje: dodano doc stringi dla klas i funkcji w folderach src/ oraz tests/
