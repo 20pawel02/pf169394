@@ -4,23 +4,10 @@ from src.reservation import ReservationManagement
 
 @pytest.fixture
 def manager():
-    """
-    Fixture to create a fresh ReservationManagement instance for each test.
-
-    Returns:
-        ReservationManagement: A new reservation management instance.
-    """
     return ReservationManagement()
 
 
 class TestBaseFunctions:
-    """
-    Test suite for basic reservation management functionality.
-
-    These tests verify core booking operations like single and multiple room bookings,
-    and checking reservation details.
-    """
-
     def test_booking_room_with_1_bed(self, manager):
         manager.booking(1, "user1", "2026-03-01", 1)
         assert manager.reservations[0].beds == 1
@@ -102,14 +89,6 @@ class TestBaseFunctions:
 
 
 class TestInvalidInputs:
-    """
-    Test suite for input validation in reservation management.
-
-    These tests ensure that the reservation system correctly handles
-    various invalid input scenarios, such as incorrect user IDs, usernames,
-    dates, and bed numbers.
-    """
-
     def test_valid_id(self, manager):
         with pytest.raises(ValueError, match="User ID must be a valid integer."):
             manager.booking("invalid_id", "user1", "2026-03-01", 1)
@@ -139,9 +118,7 @@ class TestInvalidInputs:
             manager.booking(1, 1, "2026-03-01", 1)
 
     def test_valid_username1(self, manager):
-        with pytest.raises(
-            ValueError, match="User name must contain only letters and numbers."
-        ):
+        with pytest.raises(ValueError, match="User name must contain only letters and numbers."):
             manager.booking(1, "user@name", "2026-03-01", 1)
 
     def test_valid_username2(self, manager):
@@ -153,39 +130,27 @@ class TestInvalidInputs:
             manager.booking(1, "", "2026-03-01", 1)
 
     def test_invalid_date(self, manager):
-        with pytest.raises(
-            ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."
-        ):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
             manager.booking(1, "user1", None, 1)
 
     def test_valid_date_format(self, manager):
-        with pytest.raises(
-            ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."
-        ):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
             manager.booking(1, "user1", "2026/03/01", 1)
 
     def test_valid_date_format2(self, manager):
-        with pytest.raises(
-            ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."
-        ):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
             manager.booking(1, "user1", "2026.03.01", 1)
 
     def test_valid_date_format3(self, manager):
-        with pytest.raises(
-            ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."
-        ):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
             manager.booking(1, "user1", "2026*03*01", 1)
 
     def test_valid_date_format4(self, manager):
-        with pytest.raises(
-            ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."
-        ):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
             manager.booking(1, "user1", "2026|03|01", 1)
 
     def test_valid_date_format5(self, manager):
-        with pytest.raises(
-            ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."
-        ):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
             manager.booking(1, "user1", "2026\03\01", 1)
 
     def test_valid_beds(self, manager):
@@ -221,15 +186,11 @@ class TestInvalidInputs:
             manager.booking(1, "user1", "2026-03-01", "!@#$")
 
     def test_booking_none_date(self, manager):
-        with pytest.raises(
-            ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."
-        ):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
             manager.booking(1, "user1", None, 1)
 
     def test_booking_empty_date(self, manager):
-        with pytest.raises(
-            ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."
-        ):
+        with pytest.raises(ValueError, match="Date must be a valid string in 'YYYY-MM-DD' format."):
             manager.booking(1, "user1", "", 1)
 
     def test_booking_none_user(self, manager):
@@ -242,13 +203,6 @@ class TestInvalidInputs:
 
 
 class TestEdgeCases:
-    """
-    Test suite for edge cases in reservation management.
-
-    These tests cover scenarios like cancelling non-existent bookings,
-    booking conflicts, and other boundary conditions.
-    """
-
     def test_cancel_nonexistent_booking(self, manager):
         assert manager.cancelBooking(999) == False
 
@@ -260,9 +214,7 @@ class TestEdgeCases:
 
     def test_booking_same_user_same_date(self, manager):
         manager.booking(1, "user1", "2026-03-01", 1)
-        with pytest.raises(
-            ValueError, match="User 1 user1 already booked room on 2026-03-01."
-        ):
+        with pytest.raises(ValueError, match="User 1 user1 already booked room\(s\) on 2026-03-01."):
             manager.booking(1, "user1", "2026-03-01", 2)
 
     def test_booking_different_users_same_date(self, manager):
