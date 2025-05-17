@@ -20,6 +20,7 @@ class TestBaseFunctions(unittest.TestCase):
     - usuwanie recenzji
     - pobieranie recenzji
     """
+
     def setUp(self):
         """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = Reviews()
@@ -78,6 +79,7 @@ class TestInvalidInputs(unittest.TestCase):
     Te testy zapewniają, że system odpowiednio waliduje dane wejściowe
     i zgłasza odpowiednie wyjątki w przypadku błędnych danych.
     """
+
     def setUp(self):
         """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = Reviews()
@@ -86,19 +88,15 @@ class TestInvalidInputs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "User ID must be a valid integer."):
             self.manager.add_review("invalid", 5, "comment1")
 
-    def test_invalid_id1(self):
         with self.assertRaisesRegex(ValueError, "User ID must be a valid integer."):
             self.manager.add_review(-1, 5, "comment1")
 
-    def test_invalid_id2(self):
         with self.assertRaisesRegex(ValueError, "User ID must be a valid integer."):
             self.manager.add_review(0, 5, "comment1")
 
-    def test_invalid_id3(self):
         with self.assertRaisesRegex(ValueError, "User ID must be a valid integer."):
             self.manager.add_review(1.5, 5, "comment1")
 
-    def test_invalid_id4(self):
         with self.assertRaisesRegex(ValueError, "User ID must be a valid integer."):
             self.manager.add_review(None, 5, "comment1")
 
@@ -110,15 +108,12 @@ class TestInvalidInputs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Stars must be a valid integer between 1 and 5."):
             self.manager.add_review(1, -1, "comment1")
 
-    def test_invalid_star2(self):
         with self.assertRaisesRegex(ValueError, "Stars must be a valid integer between 1 and 5."):
             self.manager.add_review(1, 0, "comment1")
 
-    def test_invalid_star3(self):
         with self.assertRaisesRegex(ValueError, "Stars must be a valid integer between 1 and 5."):
             self.manager.add_review(1, 1.5, "comment1")
 
-    def test_invalid_star4(self):
         with self.assertRaisesRegex(ValueError, "Stars must be a valid integer between 1 and 5."):
             self.manager.add_review(1, None, "comment1")
 
@@ -126,11 +121,9 @@ class TestInvalidInputs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Comment must be a string."):
             self.manager.add_review(1, 5, 1)
 
-    def test_invalid_comment1(self):
         with self.assertRaisesRegex(ValueError, "Comment must be a string."):
             self.manager.add_review(1, 5, None)
 
-    def test_invalid_comment2(self):
         with self.assertRaisesRegex(ValueError, "Comment must be a string."):
             self.manager.add_review(1, 5, "")
 
@@ -145,6 +138,7 @@ class TestEdgeCases(unittest.TestCase):
     - próba usunięcia nieistniejącej recenzji
     - obsługa wartości granicznych dla ocen
     """
+
     def setUp(self):
         """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = Reviews()
@@ -193,6 +187,7 @@ class TestReviewLifecycle(unittest.TestCase):
     - usunięcie recenzji
     - obsługę wartości granicznych dla ocen (1-5 gwiazdek)
     """
+
     def setUp(self):
         """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = Reviews()
@@ -235,7 +230,7 @@ class TestParameterizedReviews(unittest.TestCase):
     Testy sprawdzają różne przypadki walidacji danych wejściowych oraz operacji na recenzjach
     przy użyciu parametryzacji.
     """
-    
+
     def setUp(self):
         self.reviews = Reviews()
 
@@ -267,7 +262,8 @@ class TestParameterizedReviews(unittest.TestCase):
     @parameterized.expand([
         ("short_comment", "OK"),
         ("medium_comment", "This was a good experience"),
-        ("long_comment", "This was an excellent experience with great service and I would definitely recommend it to others!"),
+        ("long_comment",
+         "This was an excellent experience with great service and I would definitely recommend it to others!"),
     ])
     def test_add_review_different_comments(self, name, comment):
         self.reviews.add_review(1, 5, comment)
