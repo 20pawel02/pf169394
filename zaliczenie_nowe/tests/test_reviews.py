@@ -1,12 +1,30 @@
+"""
+Moduł testów dla systemu recenzji.
+
+Ten moduł zawiera testy jednostkowe sprawdzające poprawność działania
+systemu recenzji, w tym dodawanie, edycję, usuwanie i pobieranie recenzji.
+"""
+
 import unittest
 from src.reviews import Reviews
 
 
 class TestBaseFunctions(unittest.TestCase):
+    """
+    Testy podstawowych funkcjonalności systemu recenzji.
+
+    Sprawdza podstawowe operacje na recenzjach, takie jak:
+    - dodawanie pojedynczych i wielu recenzji
+    - edycja istniejących recenzji
+    - usuwanie recenzji
+    - pobieranie recenzji
+    """
     def setUp(self):
+        """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = Reviews()
 
     def test_add_review(self):
+        """Sprawdza poprawność dodawania nowej recenzji."""
         self.manager.add_review(1, 5, "comment1")
         self.assertEqual(self.manager.reviews_list[1].stars, 5)
         self.assertEqual(self.manager.reviews_list[1].comment, "comment1")
@@ -48,14 +66,19 @@ class TestBaseFunctions(unittest.TestCase):
 
 class TestInvalidInputs(unittest.TestCase):
     """
-    Test suite for input validation in review management.
+    Testy walidacji niepoprawnych danych wejściowych.
 
-    These tests ensure that the review system correctly handles
-    various invalid input scenarios, such as incorrect user IDs,
-    star ratings, and comments.
+    Sprawdza reakcję systemu na nieprawidłowe dane, w tym:
+    - niepoprawne identyfikatory recenzji
+    - niepoprawne oceny gwiazdkowe
+    - niepoprawne komentarze
+    - niepoprawne typy danych
+
+    Te testy zapewniają, że system odpowiednio waliduje dane wejściowe
+    i zgłasza odpowiednie wyjątki w przypadku błędnych danych.
     """
-
     def setUp(self):
+        """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = Reviews()
 
     def test_invalid_id(self):
@@ -112,7 +135,17 @@ class TestInvalidInputs(unittest.TestCase):
 
 
 class TestEdgeCases(unittest.TestCase):
+    """
+    Testy przypadków brzegowych systemu recenzji.
+
+    Sprawdza zachowanie systemu w nietypowych sytuacjach, takich jak:
+    - próba pobrania nieistniejącej recenzji
+    - próba edycji nieistniejącej recenzji
+    - próba usunięcia nieistniejącej recenzji
+    - obsługa wartości granicznych dla ocen
+    """
     def setUp(self):
+        """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = Reviews()
 
     def test_get_nonexistent_review(self):
@@ -150,7 +183,17 @@ class TestEdgeCases(unittest.TestCase):
 
 
 class TestReviewLifecycle(unittest.TestCase):
+    """
+    Testy pełnego cyklu życia recenzji.
+
+    Sprawdza kompletny proces zarządzania recenzją, w tym:
+    - utworzenie nowej recenzji
+    - edycję istniejącej recenzji
+    - usunięcie recenzji
+    - obsługę wartości granicznych dla ocen (1-5 gwiazdek)
+    """
     def setUp(self):
+        """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = Reviews()
 
     def test_full_review_lifecycle(self):

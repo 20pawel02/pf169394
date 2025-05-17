@@ -204,10 +204,14 @@ class TestInvalidInputs(unittest.TestCase):
 
 class TestEdgeCases(unittest.TestCase):
     """
-    Klasa testująca nietypowe przypadki brzegowe.
+    Klasa testująca przypadki brzegowe w systemie zarządzania użytkownikami.
 
-    Skupia się na sytuacjach nieoczywistych, takich jak usuwanie użytkowników,
-    ponowne dodawanie ich z tymi samymi danymi oraz inne nietypowe scenariusze.
+    Testuje specyficzne sytuacje graniczne, takie jak:
+    - Operacje na nieistniejących użytkownikach
+    - Aktualizacje z tymi samymi danymi
+    - Operacje z nieprawidłowymi identyfikatorami
+    - Sekwencyjność identyfikatorów po usunięciu użytkowników
+    - Interakcje między różnymi operacjami na użytkownikach
     """
 
     def setUp(self):
@@ -261,6 +265,14 @@ class TestEdgeCases(unittest.TestCase):
 
 
 class TestUserLifecycle(unittest.TestCase):
+    """
+    Klasa testująca pełny cykl życia użytkownika w systemie.
+
+    Testuje kompletną ścieżkę użytkownika od utworzenia, przez aktualizacje,
+    aż do usunięcia, weryfikując poprawność wszystkich operacji i walidacji
+    na każdym etapie.
+    """
+
     def setUp(self):
         self.manager = UserManagement()
 
@@ -303,6 +315,14 @@ class TestUserLifecycle(unittest.TestCase):
 
 
 class TestReservationIntegration(unittest.TestCase):
+    """
+    Klasa testująca integrację między systemem użytkowników a rezerwacjami.
+
+    Sprawdza poprawność interakcji między użytkownikami a ich rezerwacjami,
+    w tym wpływ rezerwacji na możliwość usuwania użytkowników oraz
+    poprawność powiązań między obiektami.
+    """
+
     def setUp(self):
         self.manager = UserManagement()
 

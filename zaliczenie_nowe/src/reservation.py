@@ -2,9 +2,29 @@ import re
 
 
 class Reservation:
+    """
+    Klasa reprezentująca pojedynczą rezerwację w systemie.
+
+    Attributes:
+        id (int): Identyfikator użytkownika dokonującego rezerwacji
+        reservation_number (int): Unikalny numer rezerwacji
+        beds (int): Liczba łóżek w rezerwacji
+        user (str): Nazwa użytkownika dokonującego rezerwacji
+        date (str): Data rezerwacji w formacie 'YYYY-MM-DD'
+    """
     def __init__(
             self, id: int, reservation_number: int, beds: int, user: str, date: str
     ):
+        """
+        Inicjalizuje nową rezerwację.
+
+        Args:
+            id (int): Identyfikator użytkownika
+            reservation_number (int): Numer rezerwacji
+            beds (int): Liczba łóżek
+            user (str): Nazwa użytkownika
+            date (str): Data rezerwacji
+        """
         self.id = id
         self.reservation_number = reservation_number
         self.beds = beds
@@ -13,10 +33,33 @@ class Reservation:
 
 
 class ReservationManagement:
+    """
+    Klasa zarządzająca systemem rezerwacji.
+
+    Umożliwia dodawanie nowych rezerwacji, anulowanie istniejących
+    oraz sprawdzanie rezerwacji dla konkretnego użytkownika.
+
+    Attributes:
+        reservations (list): Lista wszystkich rezerwacji w systemie
+    """
     def __init__(self):
+        """Inicjalizuje nowy system zarządzania rezerwacjami."""
         self.reservations = []
 
     def booking(self, id: int, user: str, date: str, beds: int):
+        """
+        Dodaje nową rezerwację do systemu.
+
+        Args:
+            id (int): Identyfikator użytkownika
+            user (str): Nazwa użytkownika
+            date (str): Data rezerwacji w formacie 'YYYY-MM-DD'
+            beds (int): Liczba łóżek
+
+        Raises:
+            ValueError: Gdy którykolwiek z parametrów jest nieprawidłowy lub gdy
+                       użytkownik już ma rezerwację na daną datę
+        """
         # input validation
         if id is None or not isinstance(id, int) or id <= 0:
             raise ValueError("User ID must be a valid integer.")
@@ -46,6 +89,15 @@ class ReservationManagement:
         self.reservations.append(newReservation)
 
     def cancelBooking(self, id):
+        """
+        Anuluje wszystkie rezerwacje dla danego użytkownika.
+
+        Args:
+            id (int): Identyfikator użytkownika
+
+        Returns:
+            bool: True jeśli anulowano jakiekolwiek rezerwacje, False w przeciwnym razie
+        """
         reservations_to_remove = []
         for reservation in self.reservations:
             if reservation.id == id:
@@ -59,6 +111,18 @@ class ReservationManagement:
         return True
 
     def userReservation(self, id: int):
+        """
+        Zwraca listę wszystkich rezerwacji danego użytkownika.
+
+        Args:
+            id (int): Identyfikator użytkownika
+
+        Returns:
+            list: Lista rezerwacji użytkownika
+
+        Raises:
+            ValueError: Gdy identyfikator użytkownika jest nieprawidłowy
+        """
         if id is None or not isinstance(id, int):
             raise ValueError("User ID must be a valid integer.")
 

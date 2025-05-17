@@ -1,20 +1,55 @@
 class Review:
+    """
+    Klasa reprezentująca pojedynczą recenzję w systemie.
+
+    Attributes:
+        id (int): Identyfikator recenzji
+        stars (int): Ocena w gwiazdkach (1-5)
+        comment (str): Komentarz do recenzji
+    """
     def __init__(
             self, id: int, stars: int, comment: str
     ):
+        """
+        Inicjalizuje nową recenzję.
+
+        Args:
+            id (int): Identyfikator recenzji
+            stars (int): Ocena w gwiazdkach (1-5)
+            comment (str): Komentarz do recenzji
+        """
         self.id = id
         self.stars = stars
         self.comment = comment
 
 
 class Reviews:
+    """
+    Klasa zarządzająca systemem recenzji.
+
+    Umożliwia dodawanie, edycję, usuwanie i pobieranie recenzji.
+    Każda recenzja jest identyfikowana przez unikalny identyfikator.
+
+    Attributes:
+        reviews_list (dict): Słownik przechowujący wszystkie recenzje
+        next_id (int): Następny dostępny identyfikator recenzji
+    """
     def __init__(self):
+        """Inicjalizuje nowy system zarządzania recenzjami."""
         self.reviews_list = {}
         self.next_id = 1
 
     def add_review(self, id: int, stars: int, comment: str):
         """
         Dodaje nową recenzję lub nadpisuje istniejącą recenzję dla danego ID użytkownika.
+
+        Args:
+            id (int): Identyfikator użytkownika
+            stars (int): Ocena w gwiazdkach (1-5)
+            comment (str): Komentarz do recenzji
+
+        Raises:
+            ValueError: Gdy którykolwiek z parametrów jest nieprawidłowy
         """
         # input validation
         if id is None or not isinstance(id, int) or id <= 0:
@@ -29,7 +64,16 @@ class Reviews:
 
     def edit_review(self, id: int, stars: int, comment: str):
         """
-        Modyfikuje istniejącą recenzję. Rzuca KeyError, jeśli recenzja nie istnieje.
+        Modyfikuje istniejącą recenzję.
+
+        Args:
+            id (int): Identyfikator recenzji
+            stars (int): Nowa ocena w gwiazdkach (1-5)
+            comment (str): Nowy komentarz
+
+        Raises:
+            KeyError: Gdy recenzja o podanym ID nie istnieje
+            ValueError: Gdy nowe wartości są nieprawidłowe
         """
         if id is None or id not in self.reviews_list:
             raise KeyError("Review with this ID does not exist.")
@@ -46,7 +90,13 @@ class Reviews:
 
     def delete_review(self, id: int):
         """
-        Usuwa recenzję. Rzuca KeyError, jeśli recenzja nie istnieje.
+        Usuwa recenzję o podanym ID.
+
+        Args:
+            id (int): Identyfikator recenzji do usunięcia
+
+        Raises:
+            KeyError: Gdy recenzja o podanym ID nie istnieje
         """
         if id is None or id not in self.reviews_list:
             raise KeyError("Review with this ID does not exist.")
@@ -54,7 +104,16 @@ class Reviews:
 
     def get_review(self, id: int):
         """
-        Pobiera recenzję użytkownika. Zwraca None, jeśli recenzja nie istnieje.
+        Pobiera recenzję o podanym ID.
+
+        Args:
+            id (int): Identyfikator recenzji
+
+        Returns:
+            Review or None: Obiekt recenzji lub None jeśli recenzja nie istnieje
+
+        Raises:
+            TypeError: Gdy podany identyfikator jest nieprawidłowy
         """
         if id is None:
             raise TypeError("Review ID must be a valid integer.")

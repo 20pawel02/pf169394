@@ -1,12 +1,30 @@
+"""
+Moduł testów dla systemu rezerwacji.
+
+Ten moduł zawiera testy jednostkowe sprawdzające poprawność działania
+systemu rezerwacji, w tym tworzenie, anulowanie i zarządzanie rezerwacjami.
+"""
+
 import unittest
 from src.reservation import ReservationManagement
 
 
 class TestBaseFunctions(unittest.TestCase):
+    """
+    Testy podstawowych funkcjonalności systemu rezerwacji.
+
+    Sprawdza podstawowe operacje na rezerwacjach, takie jak:
+    - tworzenie pojedynczych i wielu rezerwacji
+    - rezerwacje dla różnych użytkowników
+    - rezerwacje pokoi z różną liczbą łóżek
+    - anulowanie rezerwacji
+    """
     def setUp(self):
+        """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = ReservationManagement()
 
     def test_booking_room_with_1_bed(self):
+        """Sprawdza poprawność rezerwacji pokoju z jednym łóżkiem."""
         self.manager.booking(1, "user1", "2026-03-01", 1)
         self.assertEqual(self.manager.reservations[0].beds, 1)
         self.assertEqual(self.manager.reservations[0].user, "user1")
@@ -79,7 +97,17 @@ class TestBaseFunctions(unittest.TestCase):
 
 
 class TestInvalidInputs(unittest.TestCase):
+    """
+    Testy walidacji niepoprawnych danych wejściowych.
+
+    Sprawdza reakcję systemu na nieprawidłowe dane, w tym:
+    - niepoprawne identyfikatory użytkowników
+    - niepoprawne nazwy użytkowników
+    - niepoprawne formaty dat
+    - niepoprawne liczby łóżek
+    """
     def setUp(self):
+        """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = ReservationManagement()
 
     def test_valid_id(self):
@@ -172,7 +200,16 @@ class TestInvalidInputs(unittest.TestCase):
 
 
 class TestReservationEdgeCases(unittest.TestCase):
+    """
+    Testy przypadków brzegowych systemu rezerwacji.
+
+    Sprawdza zachowanie systemu w nietypowych sytuacjach, takich jak:
+    - anulowanie nieistniejących rezerwacji
+    - próba wielokrotnych rezerwacji
+    - rezerwacje w tych samych terminach
+    """
     def setUp(self):
+        """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = ReservationManagement()
 
     def test_cancel_nonexistent_booking(self):
@@ -196,7 +233,16 @@ class TestReservationEdgeCases(unittest.TestCase):
 
 
 class TestReservationValidation(unittest.TestCase):
+    """
+    Testy walidacji danych rezerwacji.
+
+    Sprawdza poprawność walidacji danych wejściowych, w tym:
+    - obsługę wartości None
+    - obsługę pustych ciągów znaków
+    - obsługę niepoprawnych typów danych
+    """
     def setUp(self):
+        """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = ReservationManagement()
 
     def test_booking_none_date(self):
@@ -221,7 +267,16 @@ class TestReservationValidation(unittest.TestCase):
 
 
 class TestUserReservationQueries(unittest.TestCase):
+    """
+    Testy zapytań o rezerwacje użytkowników.
+
+    Sprawdza funkcjonalność związaną z pobieraniem informacji o rezerwacjach:
+    - pobieranie rezerwacji dla konkretnego użytkownika
+    - obsługa przypadku braku rezerwacji
+    - obsługa przypadku po anulowaniu rezerwacji
+    """
     def setUp(self):
+        """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = ReservationManagement()
 
     def test_userReservation_invalid_id_type(self):
