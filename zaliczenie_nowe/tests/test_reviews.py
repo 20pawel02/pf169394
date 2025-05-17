@@ -7,6 +7,7 @@ systemu recenzji, w tym dodawanie, edycję, usuwanie i pobieranie recenzji.
 
 import unittest
 from src.reviews import Reviews
+from parameterized import parameterized
 
 
 class TestBaseFunctions(unittest.TestCase):
@@ -225,6 +226,68 @@ class TestReviewLifecycle(unittest.TestCase):
 
         self.manager.edit_review(2, 1, "updated to min")
         self.assertEqual(self.manager.get_review(2).stars, 1)
+
+
+class TestParameterizedReviews(unittest.TestCase):
+    """
+    Klasa zawierająca parametryzowane testy dla systemu recenzji.
+    
+    Testy sprawdzają różne przypadki walidacji danych wejściowych oraz operacji na recenzjach
+    przy użyciu parametryzacji.
+    """
+    
+    def setUp(self):
+        self.reviews = Reviews()
+
+    @parameterized.expand([
+        ("invalid_id_none", None, 5, "Good review", "User ID must be a valid integer."),
+        ("invalid_id_zero", 0, 5, "Good review", "User ID must be a valid integer."),
+        ("invalid_id_negative", -1, 5, "Good review", "User ID must be a valid integer."),
+        ("invalid_stars_none", 1, None, "Good review", "Stars must be a valid integer between 1 and 5."),
+        ("invalid_stars_zero", 1, 0, "Good review", "Stars must be a valid integer between 1 and 5."),
+        ("invalid_stars_negative", 1, -1, "Good review", "Stars must be a valid integer between 1 and 5."),
+        ("invalid_stars_too_high", 1, 6, "Good review", "Stars must be a valid integer between 1 and 5."),
+        ("invalid_comment_none", 1, 5, None, "Comment must be a string."),
+        ("invalid_comment_empty", 1, 5, "", "Comment must be a string."),
+    ])
+    def test_add_review_invalid_inputs(self, name, user_id, stars, comment, expected_error):
+        with self.assertRaisesRegex(ValueError, expected_error):
+            self.reviews.add_review(user_id, stars, comment)
+
+    @parameterized.expand([
+        ("valid_stars_min", 1),
+        ("valid_stars_mid", 3),
+        ("valid_stars_max", 5),
+    ])
+    def test_add_review_valid_stars(self, name, stars):
+        self.reviews.add_review(1, stars, "Good review")
+        review = self.reviews.get_review(1)
+        self.assertEqual(review.stars, stars)
+
+    @parameterized.expand([
+        ("short_comment", "OK"),
+        ("medium_comment", "This was a good experience"),
+        ("long_comment", "This was an excellent experience with great service and I would definitely recommend it to others!"),
+    ])
+    def test_add_review_different_comments(self, name, comment):
+        self.reviews.add_review(1, 5, comment)
+        review = self.reviews.get_review(1)
+        self.assertEqual(review.comment, comment)
+
+    @parameterized.expand([
+        ("update_stars", 1, 4, "Original comment"),
+        ("update_comment", 1, 5, "Updated comment"),
+        ("update_both", 1, 3, "Both updated"),
+    ])
+    def test_edit_review_variations(self, name, user_id, new_stars, new_comment):
+        # Add initial review
+        self.reviews.add_review(user_id, 5, "Initial comment")
+        # Edit review
+        self.reviews.edit_review(user_id, new_stars, new_comment)
+        # Verify changes
+        review = self.reviews.get_review(user_id)
+        self.assertEqual(review.stars, new_stars)
+        self.assertEqual(review.comment, new_comment)
 
 
 if __name__ == '__main__':

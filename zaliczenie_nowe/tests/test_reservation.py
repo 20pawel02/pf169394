@@ -7,6 +7,7 @@ systemu rezerwacji, w tym tworzenie, anulowanie i zarządzanie rezerwacjami.
 
 import unittest
 from src.reservation import ReservationManagement
+from parameterized import parameterized
 
 
 class TestBaseFunctions(unittest.TestCase):
@@ -306,6 +307,70 @@ class TestUserReservationQueries(unittest.TestCase):
     def test_userReservation_none_id(self):
         with self.assertRaisesRegex(ValueError, "User ID must be a valid integer."):
             self.manager.userReservation(None)
+
+
+class TestParameterizedReservation(unittest.TestCase):
+    """
+    Klasa zawierająca parametryzowane testy dla systemu rezerwacji.
+    
+    Testy sprawdzają różne przypadki walidacji danych wejściowych oraz operacji na rezerwacjach
+    przy użyciu parametryzacji.
+    """
+    
+    def setUp(self):
+        self.manager = ReservationManagement()
+
+    @parameterized.expand([
+        ("invalid_id_none", None, "user1", "2024-03-20", 2, "User ID must be a valid integer."),
+        ("invalid_id_zero", 0, "user1", "2024-03-20", 2, "User ID must be a valid integer."),
+        ("invalid_id_negative", -1, "user1", "2024-03-20", 2, "User ID must be a valid integer."),
+        ("invalid_user_none", 1, None, "2024-03-20", 2, "User name must be a valid string."),
+        ("invalid_user_empty", 1, "", "2024-03-20", 2, "User name must be a valid string."),
+        ("invalid_user_special_chars", 1, "user@1", "2024-03-20", 2, "User name must contain only letters and numbers."),
+        ("invalid_date_none", 1, "user1", None, 2, "Date must be a valid string in 'YYYY-MM-DD' format."),
+        ("invalid_date_empty", 1, "user1", "", 2, "Date must be a valid string in 'YYYY-MM-DD' format."),
+        ("invalid_date_format", 1, "user1", "20-03-2024", 2, "Date must be a valid string in 'YYYY-MM-DD' format."),
+        ("invalid_beds_none", 1, "user1", "2024-03-20", None, "Number of beds must be a valid integer."),
+        ("invalid_beds_zero", 1, "user1", "2024-03-20", 0, "Number of beds must be a valid integer."),
+        ("invalid_beds_negative", 1, "user1", "2024-03-20", -1, "Number of beds must be a valid integer."),
+    ])
+    def test_booking_invalid_inputs(self, name, user_id, user, date, beds, expected_error):
+        with self.assertRaisesRegex(ValueError, expected_error):
+            self.manager.booking(user_id, user, date, beds)
+
+    @parameterized.expand([
+        ("single_bed", 1),
+        ("double_bed", 2),
+        ("family_room", 4),
+        ("large_group", 8),
+    ])
+    def test_booking_different_bed_counts(self, name, beds):
+        self.manager.booking(1, "user1", "2024-03-20", beds)
+        reservations = self.manager.userReservation(1)
+        self.assertEqual(len(reservations), 1)
+        self.assertEqual(reservations[0].beds, beds)
+
+    @parameterized.expand([
+        ("past_date", "2023-01-01"),
+        ("current_date", "2024-03-20"),
+        ("future_date", "2024-12-31"),
+    ])
+    def test_booking_different_dates(self, name, date):
+        self.manager.booking(1, "user1", date, 2)
+        reservations = self.manager.userReservation(1)
+        self.assertEqual(len(reservations), 1)
+        self.assertEqual(reservations[0].date, date)
+
+    @parameterized.expand([
+        ("single_reservation", 1),
+        ("few_reservations", 3),
+        ("many_reservations", 5),
+    ])
+    def test_multiple_reservations(self, name, num_reservations):
+        for i in range(num_reservations):
+            self.manager.booking(1, "user1", f"2024-03-{20+i}", 2)
+        reservations = self.manager.userReservation(1)
+        self.assertEqual(len(reservations), num_reservations)
 
 
 if __name__ == '__main__':

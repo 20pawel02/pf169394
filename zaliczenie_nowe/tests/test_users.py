@@ -1,5 +1,6 @@
 import unittest
 from src.users import UserManagement
+from parameterized import parameterized
 
 
 class TestBaseFunctions(unittest.TestCase):
@@ -339,6 +340,71 @@ class TestReservationIntegration(unittest.TestCase):
         self.manager.users[user_id].reservations.clear()
         self.manager.deleteUser(user_id)
         self.assertIsNone(self.manager.getUser(user_id))
+
+
+class TestParameterized(unittest.TestCase):
+    """
+    Klasa zawierająca parametryzowane testy dla systemu zarządzania użytkownikami.
+    
+    Testy sprawdzają różne przypadki walidacji danych wejściowych oraz operacji na użytkownikach
+    przy użyciu parametryzacji, co pozwala na bardziej zwięzłe i czytelne testy.
+    """
+    
+    def setUp(self):
+        self.manager = UserManagement()
+
+    @parameterized.expand([
+        ("empty_email", "", "password123", "Email must be a valid string."),
+        ("none_email", None, "password123", "Email must be a valid string."),
+        ("numeric_email", 123, "password123", "Email must be a valid string."),
+        ("empty_password", "user@mail.com", "", "Password must be longer than 8 characters."),
+        ("none_password", "user@mail.com", None, "Password must be longer than 8 characters."),
+        ("short_password", "user@mail.com", "short", "Password must be longer than 8 characters."),
+    ])
+    def test_addUser_invalid_inputs(self, name, email, password, expected_error):
+        with self.assertRaisesRegex(ValueError, expected_error):
+            self.manager.addUser(email, password)
+
+    @parameterized.expand([
+        ("empty_email", "", "newpass123"),
+        ("none_email", None, "newpass123"),
+        ("numeric_email", 123, "newpass123"),
+    ])
+    def test_updateUser_invalid_email(self, name, email, password):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        with self.assertRaisesRegex(ValueError, "Email must be a valid string."):
+            self.manager.updateUser(user_id, email, password)
+
+    @parameterized.expand([
+        ("empty_password", "new@mail.com", ""),
+        ("none_password", "new@mail.com", None),
+        ("short_password", "new@mail.com", "short"),
+    ])
+    def test_updateUser_invalid_password(self, name, email, password):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        with self.assertRaisesRegex(ValueError, "Password must be longer than 8 characters."):
+            self.manager.updateUser(user_id, email, password)
+
+    @parameterized.expand([
+        ("none_id", None),
+        ("zero_id", 0),
+        ("negative_id", -1),
+        ("non_existent_id", 999),
+    ])
+    def test_getUser_invalid_ids(self, name, user_id):
+        self.assertIsNone(self.manager.getUser(user_id))
+
+    @parameterized.expand([
+        ("single_reservation", ["reservation1"]),
+        ("multiple_reservations", ["reservation1", "reservation2"]),
+        ("many_reservations", ["r1", "r2", "r3", "r4", "r5"]),
+    ])
+    def test_deleteUser_with_different_reservations(self, name, reservations):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        for reservation in reservations:
+            self.manager.users[user_id].reservations.append(reservation)
+        with self.assertRaisesRegex(ValueError, "User have existing reservations."):
+            self.manager.deleteUser(user_id)
 
 
 if __name__ == '__main__':
