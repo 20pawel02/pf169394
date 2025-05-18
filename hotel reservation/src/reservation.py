@@ -12,6 +12,7 @@ class Reservation:
         user (str): Nazwa użytkownika dokonującego rezerwacji
         date (str): Data rezerwacji w formacie 'YYYY-MM-DD'
     """
+
     def __init__(
             self, id: int, reservation_number: int, beds: int, user: str, date: str
     ):
@@ -42,6 +43,7 @@ class ReservationManagement:
     Attributes:
         reservations (list): Lista wszystkich rezerwacji w systemie
     """
+
     def __init__(self):
         """Inicjalizuje nowy system zarządzania rezerwacjami."""
         self.reservations = []
@@ -76,11 +78,7 @@ class ReservationManagement:
 
         # checking conflicting reservations
         for existing_reservation in self.reservations:
-            if (
-                    existing_reservation.id == id
-                    and existing_reservation.user == user
-                    and existing_reservation.date == date
-            ):
+            if existing_reservation.id == id and existing_reservation.user == user and existing_reservation.date == date:
                 raise ValueError("User already booked room(s) on this date.")
 
         # creating new reservation id

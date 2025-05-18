@@ -74,18 +74,16 @@ class TestInvalidInputs(unittest.TestCase):
     def test_addUser_password(self):
         with self.assertRaisesRegex(ValueError, "Password must be longer than 8 characters."):
             self.manager.addUser("user@mail.com", "short")
-    
+
         with self.assertRaisesRegex(ValueError, "Password must be longer than 8 characters."):
             self.manager.addUser("user@mail.com", "")
-    
+
         with self.assertRaisesRegex(ValueError, "Password must be longer than 8 characters."):
             self.manager.addUser("user@mail.com", None)
-    
+
         user_id = self.manager.addUser("user1@mail.com", "password123")
         with self.assertRaisesRegex(ValueError, "Email must be a valid string."):
             self.manager.updateUser(user_id, None, "password123")
-    
-        user_id2 = self.manager.addUser("user2@mail.com", "password123")
 
     def test_updateUser_short_password(self):
         user_id = self.manager.addUser("user@mail.com", "password123")
@@ -96,7 +94,6 @@ class TestInvalidInputs(unittest.TestCase):
 class TestEdgeCases(unittest.TestCase):
     """
     Klasa testująca przypadki brzegowe w systemie zarządzania użytkownikami.
-
     Testuje specyficzne sytuacje graniczne, takie jak:
     - Operacje na nieistniejących użytkownikach
     - Aktualizacje z tymi samymi danymi
@@ -235,7 +232,6 @@ class TestReservationIntegration(unittest.TestCase):
 class TestParameterized(unittest.TestCase):
     """
     Klasa zawierająca parametryzowane testy dla systemu zarządzania użytkownikami.
-    
     Testy sprawdzają różne przypadki walidacji danych wejściowych oraz operacji na użytkownikach
     przy użyciu parametryzacji, co pozwala na bardziej zwięzłe i czytelne testy.
     """

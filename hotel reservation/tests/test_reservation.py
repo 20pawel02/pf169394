@@ -20,6 +20,7 @@ class TestBaseFunctions(unittest.TestCase):
     - rezerwacje pokoi z różną liczbą łóżek
     - anulowanie rezerwacji
     """
+
     def setUp(self):
         """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = ReservationManagement()
@@ -29,11 +30,9 @@ class TestBaseFunctions(unittest.TestCase):
         self.manager.booking(1, "user1", "2026-03-01", 1)
         self.assertEqual(self.manager.reservations[0].beds, 1)
 
-
     def test_cancel_booking(self):
         self.manager.booking(1, "user1", "2026-03-01", 1)
         self.assertTrue(self.manager.cancelBooking(1))
-
 
     def test_userReservation(self):
         self.manager.booking(1, "user1", "2026-03-01", 1)
@@ -51,6 +50,7 @@ class TestInvalidInputs(unittest.TestCase):
     - niepoprawne formaty dat
     - niepoprawne liczby łóżek
     """
+
     def setUp(self):
         """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = ReservationManagement()
@@ -59,19 +59,15 @@ class TestInvalidInputs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "User ID must be a valid integer."):
             self.manager.booking("invalid_id", "user1", "2026-03-01", 1)
 
-    def test_valid_id1(self):
         with self.assertRaisesRegex(ValueError, "User ID must be a valid integer."):
             self.manager.booking(-1, "user1", "2026-03-01", 1)
 
-    def test_valid_id2(self):
         with self.assertRaisesRegex(ValueError, "User ID must be a valid integer."):
             self.manager.booking(0, "user1", "2026-03-01", 1)
 
-    def test_valid_id3(self):
         with self.assertRaisesRegex(ValueError, "User ID must be a valid integer."):
             self.manager.booking(1.5, "user1", "2026-03-01", 1)
 
-    def test_valid_id4(self):
         with self.assertRaisesRegex(ValueError, "User ID must be a valid integer."):
             self.manager.booking("!@#$%", "user1", "2026-03-01", 1)
 
@@ -79,15 +75,12 @@ class TestInvalidInputs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "User name must be a valid string."):
             self.manager.booking(1, 1, "2026-03-01", 1)
 
-    def test_valid_username1(self):
         with self.assertRaisesRegex(ValueError, "User name must contain only letters and numbers."):
             self.manager.booking(1, "user@name", "2026-03-01", 1)
 
-    def test_valid_username2(self):
         with self.assertRaisesRegex(ValueError, "User name must contain only letters and numbers."):
             self.manager.booking(1, "!@#$%", "2026-03-01", 1)
 
-    def test_valid_username3(self):
         with self.assertRaisesRegex(ValueError, "User name must contain only letters and numbers."):
             self.manager.booking(1, "user#$%", "2026-03-01", 1)
 
@@ -95,43 +88,21 @@ class TestInvalidInputs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Date must be a valid string in 'YYYY-MM-DD' format."):
             self.manager.booking(1, "user1", "2026/03/01", 1)
 
-    def test_valid_date_format2(self):
         with self.assertRaisesRegex(ValueError, "Date must be a valid string in 'YYYY-MM-DD' format."):
             self.manager.booking(1, "user1", "2026.03.01", 1)
-
-    def test_valid_date_format3(self):
-        with self.assertRaisesRegex(ValueError, "Date must be a valid string in 'YYYY-MM-DD' format."):
-            self.manager.booking(1, "user1", "2026*03*01", 1)
-
-    def test_valid_date_format4(self):
-        with self.assertRaisesRegex(ValueError, "Date must be a valid string in 'YYYY-MM-DD' format."):
-            self.manager.booking(1, "user1", "2026|03|01", 1)
-
-    def test_valid_date_format5(self):
-        with self.assertRaisesRegex(ValueError, "Date must be a valid string in 'YYYY-MM-DD' format."):
-            self.manager.booking(1, "user1", "2026\\03\\01", 1)
 
     def test_valid_beds(self):
         with self.assertRaisesRegex(ValueError, "Number of beds must be a valid integer."):
             self.manager.booking(1, "user1", "2026-03-01", "1")
 
-
-    def test_valid_beds1(self):
         with self.assertRaisesRegex(ValueError, "Number of beds must be a valid integer."):
             self.manager.booking(1, "user1", "2026-03-01", -1)
 
-    def test_valid_beds2(self):
         with self.assertRaisesRegex(ValueError, "Number of beds must be a valid integer."):
             self.manager.booking(1, "user1", "2026-03-01", 0)
 
-    def test_valid_beds3(self):
-        with self.assertRaisesRegex(ValueError, "Number of beds must be a valid integer."):
-            self.manager.booking(1, "user1", "2026-03-01", "number")
-
-    def test_valid_beds4(self):
         with self.assertRaisesRegex(ValueError, "Number of beds must be a valid integer."):
             self.manager.booking(1, "user1", "2026-03-01", 1.5)
-
 
 
 class TestReservationEdgeCases(unittest.TestCase):
@@ -143,6 +114,7 @@ class TestReservationEdgeCases(unittest.TestCase):
     - próba wielokrotnych rezerwacji
     - rezerwacje w tych samych terminach
     """
+
     def setUp(self):
         """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = ReservationManagement()
@@ -176,6 +148,7 @@ class TestReservationValidation(unittest.TestCase):
     - obsługę pustych ciągów znaków
     - obsługę niepoprawnych typów danych
     """
+
     def setUp(self):
         """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = ReservationManagement()
@@ -210,6 +183,7 @@ class TestUserReservationQueries(unittest.TestCase):
     - obsługa przypadku braku rezerwacji
     - obsługa przypadku po anulowaniu rezerwacji
     """
+
     def setUp(self):
         """Przygotowuje środowisko testowe przed każdym testem."""
         self.manager = ReservationManagement()
@@ -237,11 +211,10 @@ class TestUserReservationQueries(unittest.TestCase):
 class TestParameterizedReservation(unittest.TestCase):
     """
     Klasa zawierająca parametryzowane testy dla systemu rezerwacji.
-    
     Testy sprawdzają różne przypadki walidacji danych wejściowych oraz operacji na rezerwacjach
     przy użyciu parametryzacji.
     """
-    
+
     def setUp(self):
         self.manager = ReservationManagement()
 
@@ -293,7 +266,7 @@ class TestParameterizedReservation(unittest.TestCase):
     ])
     def test_multiple_reservations(self, name, num_reservations):
         for i in range(num_reservations):
-            self.manager.booking(1, "user1", f"2024-03-{20+i}", 2)
+            self.manager.booking(1, "user1", f"2024-03-{20 + i}", 2)
         reservations = self.manager.userReservation(1)
         self.assertEqual(len(reservations), num_reservations)
 

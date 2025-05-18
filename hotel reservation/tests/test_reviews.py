@@ -104,7 +104,6 @@ class TestInvalidInputs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Stars must be a valid integer between 1 and 5."):
             self.manager.add_review(1, 6, "comment1")
 
-    def test_invalid_star1(self):
         with self.assertRaisesRegex(ValueError, "Stars must be a valid integer between 1 and 5."):
             self.manager.add_review(1, -1, "comment1")
 
@@ -226,7 +225,6 @@ class TestReviewLifecycle(unittest.TestCase):
 class TestParameterizedReviews(unittest.TestCase):
     """
     Klasa zawierająca parametryzowane testy dla systemu recenzji.
-    
     Testy sprawdzają różne przypadki walidacji danych wejściowych oraz operacji na recenzjach
     przy użyciu parametryzacji.
     """

@@ -1,4 +1,3 @@
-unittest
 pytest
 coverage
 flake8
