@@ -1,14 +1,22 @@
 class User:
     """
-    Represents a user with their basic information and reservations.
+    Klasa reprezentująca użytkownika w systemie.
 
     Attributes:
-        id (int): Unique identifier for the user.
-        email (str): User's email address.
-        password (str): User's password.
-        reservations (list): List of user's reservations.
+        id (int): Unikalny identyfikator użytkownika
+        email (str): Adres email użytkownika
+        password (str): Hasło użytkownika
+        reservations (list): Lista rezerwacji użytkownika
     """
     def __init__(self, id: int, email: str, password: str):
+        """
+        Inicjalizuje nowego użytkownika.
+
+        Args:
+            id (int): Identyfikator użytkownika
+            email (str): Adres email
+            password (str): Hasło (minimum 8 znaków)
+        """
         self.id = id
         self.email = email
         self.password = password
@@ -17,39 +25,43 @@ class User:
 
 class UserManagement:
     """
-    Manages user accounts with methods to add, update, and delete users.
+    Klasa zarządzająca systemem użytkowników.
+
+    Umożliwia dodawanie, aktualizację, usuwanie i pobieranie użytkowników.
+    Każdy użytkownik jest identyfikowany przez unikalny identyfikator.
 
     Attributes:
-        users (dict): A dictionary of users, keyed by their unique ID.
-        next_id (int): Incremental ID for creating new users.
+        users (dict): Słownik przechowujący wszystkich użytkowników
+        next_id (int): Następny dostępny identyfikator użytkownika
     """
     def __init__(self):
+        """Inicjalizuje nowy system zarządzania użytkownikami."""
         self.users = {}
         self.next_id = 1
 
     def addUser(self, email: str, password: str):
         """
-        Add a new user to the system.
+        Dodaje nowego użytkownika do systemu.
 
         Args:
-            email (str): User's email address.
-            password (str): User's password.
+            email (str): Adres email użytkownika
+            password (str): Hasło użytkownika (minimum 8 znaków)
 
         Returns:
-            int: The unique ID of the newly created user.
+            int: Identyfikator nowego użytkownika
 
         Raises:
-            ValueError: If email already exists or input validation fails.
+            ValueError: Gdy email już istnieje lub gdy dane są nieprawidłowe
         """
-        # chceck if user already exists
+        # check if user already exists
         for user in self.users.values():
             if user.email == email:
                 raise ValueError("User already exists.")
 
         # input validation
-        if not email or not isinstance(email, str):
+        if not isinstance(email, str) or not email:
             raise ValueError("Email must be a valid string.")
-        if not password or not isinstance(password, str) or len(password) < 8:
+        if not isinstance(password, str) or len(password) < 8:
             raise ValueError("Password must be longer than 8 characters.")
 
         # creating user
@@ -60,24 +72,25 @@ class UserManagement:
 
     def updateUser(self, id: int, email: str, password: str):
         """
-        Update an existing user's email and password.
+        Aktualizuje dane istniejącego użytkownika.
 
         Args:
-            id (int): User's unique identifier.
-            email (str): New email address.
-            password (str): New password.
+            id (int): Identyfikator użytkownika
+            email (str): Nowy adres email
+            password (str): Nowe hasło (minimum 8 znaków)
 
         Raises:
-            ValueError: If user doesn't exist, email is invalid, or email already exists.
+            ValueError: Gdy użytkownik nie istnieje, email jest już zajęty
+                      lub gdy dane są nieprawidłowe
         """
         # check if user exists
         if id not in self.users:
             raise ValueError("User not exists.")
 
         # input validation
-        if not email or not isinstance(email, str):
+        if not isinstance(email, str) or not email:
             raise ValueError("Email must be a valid string.")
-        if len(password) < 8:
+        if not isinstance(password, str) or len(password) < 8:
             raise ValueError("Password must be longer than 8 characters.")
 
         for user in self.users.values():
@@ -90,15 +103,15 @@ class UserManagement:
 
     def deleteUser(self, id: int):
         """
-        Delete a user from the system.
+        Usuwa użytkownika z systemu.
 
         Args:
-            id (int): User's unique identifier.
+            id (int): Identyfikator użytkownika do usunięcia
 
         Raises:
-            ValueError: If user does not exist or has existing reservations.
+            ValueError: Gdy użytkownik nie istnieje lub ma aktywne rezerwacje
         """
-        # chceck if user exist in users
+        # check if user exist in users
         if id not in self.users:
             raise ValueError("User is not existing.")
 
@@ -110,12 +123,12 @@ class UserManagement:
 
     def getUser(self, id: int):
         """
-        Retrieve a user by their unique ID.
+        Pobiera użytkownika o podanym ID.
 
         Args:
-            id (int): User's unique identifier.
+            id (int): Identyfikator użytkownika
 
         Returns:
-            User: The user with the matching ID, or None if not found.
+            User or None: Obiekt użytkownika lub None jeśli użytkownik nie istnieje
         """
         return self.users.get(id, None)

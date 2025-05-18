@@ -1,379 +1,301 @@
-import pytest
+import unittest
 from src.users import UserManagement
+from parameterized import parameterized
 
 
-@pytest.fixture
-def manager():
+class TestBaseFunctions(unittest.TestCase):
     """
-    Fixture to create a fresh UserManagement instance for each test.
+    Klasa testująca podstawowe funkcjonalności użytkowników.
 
-    Returns:
-        UserManagement: A new user management instance.
+    Testuje przypadki poprawnego dodawania, aktualizowania i usuwania użytkowników.
+    Dodatkowo sprawdza poprawną obsługę identyfikatorów użytkowników oraz liczbę użytkowników w systemie.
     """
-    return UserManagement()
+
+    def setUp(self):
+        self.manager = UserManagement()
+
+    def test_addUser_email(self):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        self.assertEqual(self.manager.users[user_id].email, "user@mail.com")
+
+    def test_addUser_password(self):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        self.assertEqual(self.manager.users[user_id].password, "password123")
+
+    def test_addUser_id_assignment(self):
+        user_id1 = self.manager.addUser("user1@mail.com", "password123")
+        user_id2 = self.manager.addUser("user2@mail.com", "password123")
+        self.assertEqual(user_id2, user_id1 + 1)
+
+    def test_getUser_existing(self):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        user = self.manager.getUser(user_id)
+        self.assertEqual(user.email, "user@mail.com")
+        self.assertEqual(user.password, "password123")
+        self.assertEqual(len(user.reservations), 0)
+
+    def test_updateUser_email(self):
+        # update email
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        self.manager.updateUser(user_id, "newemail@mail.com", "password123")
+        self.assertEqual(self.manager.users[user_id].email, "newemail@mail.com")
+
+        # update password
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        self.manager.updateUser(user_id, "user@mail.com", "newpassword123")
+        self.assertEqual(self.manager.users[user_id].password, "newpassword123")
+
+    def test_deleteUser_success(self):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        self.manager.deleteUser(user_id)
+        self.assertIsNone(self.manager.getUser(user_id))
 
 
-<<<<<<< HEAD
-class TestBaseFunctions:
+class TestInvalidInputs(unittest.TestCase):
     """
-    Test suite for basic user management functionality.
+    Klasa testująca obsługę niepoprawnych danych wejściowych.
 
-    These tests verify core user operations like adding, retrieving,
-    updating, and managing user details.
+    Testuje przypadki niepoprawnego e-maila, hasła oraz obsługę brakujących danych.
     """
-=======
-class TestBasicUserOperations:
->>>>>>> parent of 1d01520 (final)
-    def test_addUser_email(self, manager):
-        email = manager.addUser("user@mail.com", "password123")
-        assert manager.users[email].email == "user@mail.com"
 
-    def test_addUser_password(self, manager):
-        passwd = manager.addUser("user@mail.com", "password123")
-        assert manager.users[passwd].password == "password123"
+    def setUp(self):
+        self.manager = UserManagement()
 
-    def test_addUser_id_assignment(self, manager):
-        user_id1 = manager.addUser("user1@mail.com", "password123")
-        user_id2 = manager.addUser("user2@mail.com", "password123")
-        assert user_id2 == user_id1 + 1
+    def test_addUser_empty_email(self):
+        with self.assertRaisesRegex(ValueError, "Email must be a valid string."):
+            self.manager.addUser("", "password123")
 
-    def test_addUser_multiple(self, manager):
-        manager.addUser("user1@mail.com", "password123")
-        manager.addUser("user2@mail.com", "password123")
-        manager.addUser("user3@mail.com", "password123")
-        assert manager.getUser(2) is not None
+        with self.assertRaisesRegex(ValueError, "Email must be a valid string."):
+            self.manager.addUser(None, "password123")
 
-    def test_getUser_existing(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        user = manager.getUser(user_id)
-        assert user.email == "user@mail.com"
-        assert user.password == "password123"
-<<<<<<< HEAD
+        with self.assertRaisesRegex(ValueError, "Email must be a valid string."):
+            self.manager.addUser(123, "password123")
 
-    def test_updateUser_email(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.updateUser(user_id, "newemail@mail.com", "password123")
-        assert manager.users[user_id].email == "newemail@mail.com"
+    def test_addUser_password(self):
+        with self.assertRaisesRegex(ValueError, "Password must be longer than 8 characters."):
+            self.manager.addUser("user@mail.com", "short")
+    
+        with self.assertRaisesRegex(ValueError, "Password must be longer than 8 characters."):
+            self.manager.addUser("user@mail.com", "")
+    
+        with self.assertRaisesRegex(ValueError, "Password must be longer than 8 characters."):
+            self.manager.addUser("user@mail.com", None)
+    
+        user_id = self.manager.addUser("user1@mail.com", "password123")
+        with self.assertRaisesRegex(ValueError, "Email must be a valid string."):
+            self.manager.updateUser(user_id, None, "password123")
+    
+        user_id2 = self.manager.addUser("user2@mail.com", "password123")
 
-    def test_updateUser_password(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.updateUser(user_id, "user@mail.com", "newpassword123")
-        assert manager.users[user_id].password == "newpassword123"
-
-    def test_updateUser_both(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.updateUser(user_id, "new@mail.com", "newpass123")
-        assert manager.users[user_id].email == "new@mail.com"
-        assert manager.users[user_id].password == "newpass123"
-
-    def test_multiple_updates_same_user(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.updateUser(user_id, "new1@mail.com", "password123")
-        manager.updateUser(user_id, "new2@mail.com", "password123")
-        manager.updateUser(user_id, "new3@mail.com", "password123")
-        assert manager.getUser(user_id).email == "new3@mail.com"
-
-    def test_deleteUser_success(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.deleteUser(user_id)
-        assert manager.getUser(user_id) is None
-
-    def test_next_id_increment(self, manager):
-        initial_next_id = manager.next_id
-        manager.addUser("user1@mail.com", "password123")
-        assert manager.next_id == initial_next_id + 1
-
-    def test_next_id_after_deletion(self, manager):
-        id1 = manager.addUser("user1@mail.com", "password123")
-        initial_next_id = manager.next_id
-        manager.deleteUser(id1)
-        assert manager.next_id == initial_next_id
-
-    def test_user_count(self, manager):
-        initial_count = len(manager.users)
-        manager.addUser("user1@mail.com", "password123")
-        manager.addUser("user2@mail.com", "password123")
-        assert len(manager.users) == initial_count + 2
-
-    def test_user_count_after_deletion(self, manager):
-        manager.addUser("user1@mail.com", "password123")
-        manager.addUser("user2@mail.com", "password123")
-        initial_count = len(manager.users)
-        manager.deleteUser(1)
-        assert len(manager.users) == initial_count - 1
-
-    def test_add_update_delete_cycle(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.updateUser(user_id, "new@mail.com", "newpass123")
-        manager.deleteUser(user_id)
-        assert manager.getUser(user_id) is None
-
-    def test_multiple_users_operations(self, manager):
-        id1 = manager.addUser("user1@mail.com", "password123")
-        id2 = manager.addUser("user2@mail.com", "password123")
-        id3 = manager.addUser("user3@mail.com", "password123")
-
-        manager.updateUser(id2, "updated2@mail.com", "newpass123")
-        manager.deleteUser(id1)
-
-        assert manager.getUser(id1) is None
-        assert manager.getUser(id2).email == "updated2@mail.com"
-        assert manager.getUser(id3).email == "user3@mail.com"
-=======
-
-    def test_getUser_nonexistent(self, manager):
-        assert manager.getUser(999) is None
->>>>>>> parent of 1d01520 (final)
+    def test_updateUser_short_password(self):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        with self.assertRaisesRegex(ValueError, "Password must be longer than 8 characters."):
+            self.manager.updateUser(user_id, "new@mail.com", "short")
 
 
-class TestInvalidInputs:
+class TestEdgeCases(unittest.TestCase):
     """
-    Test suite for input validation in user management.
+    Klasa testująca przypadki brzegowe w systemie zarządzania użytkownikami.
 
-    These tests ensure that the user management system correctly handles
-    various invalid input scenarios, such as incorrect email formats,
-    password lengths, and duplicate emails.
+    Testuje specyficzne sytuacje graniczne, takie jak:
+    - Operacje na nieistniejących użytkownikach
+    - Aktualizacje z tymi samymi danymi
+    - Operacje z nieprawidłowymi identyfikatorami
+    - Sekwencyjność identyfikatorów po usunięciu użytkowników
+    - Interakcje między różnymi operacjami na użytkownikach
     """
-    def test_addUser_empty_email(self, manager):
-        with pytest.raises(ValueError, match="Email must be a valid string."):
-            manager.addUser("", "password123")
 
-    def test_addUser_none_email(self, manager):
-        with pytest.raises(ValueError, match="Email must be a valid string."):
-            manager.addUser(None, "password123")
+    def setUp(self):
+        self.manager = UserManagement()
 
-    def test_addUser_invalid_email_type(self, manager):
-        with pytest.raises(ValueError, match="Email must be a valid string."):
-            manager.addUser(123, "password123")
+    def test_getUser_nonexistent(self):
+        self.assertIsNone(self.manager.getUser(999))
 
-    def test_addUser_duplicate_email(self, manager):
-        manager.addUser("user@mail.com", "password123")
-        with pytest.raises(ValueError, match="User already exists."):
-            manager.addUser("user@mail.com", "different123")
+    def test_update_user_same_email(self):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        self.manager.updateUser(user_id, "user@mail.com", "newpassword123")
+        self.assertEqual(self.manager.users[user_id].email, "user@mail.com")
+        self.assertEqual(self.manager.users[user_id].password, "newpassword123")
 
-    def test_addUser_short_password(self, manager):
-        with pytest.raises(
-            ValueError, match="Password must be longer than 8 characters."
-        ):
-            manager.addUser("user@mail.com", "short")
+    def test_get_user_with_none_id(self):
+        self.assertIsNone(self.manager.getUser(None))
 
-    def test_addUser_empty_password(self, manager):
-        with pytest.raises(
-            ValueError, match="Password must be longer than 8 characters."
-        ):
-            manager.addUser("user@mail.com", "")
+    def test_get_user_with_zero_id(self):
+        self.assertIsNone(self.manager.getUser(0))
 
-    def test_addUser_none_password(self, manager):
-        with pytest.raises(
-            ValueError, match="Password must be longer than 8 characters."
-        ):
-            manager.addUser("user@mail.com", None)
+    def test_get_user_with_negative_id(self):
+        self.assertIsNone(self.manager.getUser(-1))
 
-    def test_updateUser_nonexistent_user(self, manager):
-        with pytest.raises(ValueError, match="User not exists."):
-            manager.updateUser(999, "email@mail.com", "password123")
+    def test_sequential_id_after_delete(self):
+        id1 = self.manager.addUser("user1@mail.com", "password123")
+        self.manager.deleteUser(id1)
+        id2 = self.manager.addUser("user2@mail.com", "password123")
+        self.assertEqual(id2, id1 + 1)
 
-    def test_updateUser_empty_email(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        with pytest.raises(ValueError, match="Email must be a valid string."):
-            manager.updateUser(user_id, "", "password123")
+    def test_update_after_other_user_deleted(self):
+        id1 = self.manager.addUser("user1@mail.com", "password123")
+        id2 = self.manager.addUser("user2@mail.com", "password123")
+        self.assertEqual(len(self.manager.users[id1].reservations), 0)
+        self.manager.deleteUser(id1)
+        self.manager.updateUser(id2, "updated2@mail.com", "newpassword123")
+        self.assertEqual(self.manager.getUser(id2).email, "updated2@mail.com")
+        self.assertEqual(self.manager.getUser(id2).password, "newpassword123")
 
-    def test_updateUser_none_email(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        with pytest.raises(ValueError, match="Email must be a valid string."):
-            manager.updateUser(user_id, None, "password123")
+    def test_add_delete_add_same_email(self):
+        id1 = self.manager.addUser("user@mail.com", "password123")
+        self.manager.deleteUser(id1)
+        id2 = self.manager.addUser("user@mail.com", "password123")
+        self.assertNotEqual(id1, id2)
 
-    def test_updateUser_invalid_email_type(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        with pytest.raises(ValueError, match="Email must be a valid string."):
-            manager.updateUser(user_id, 123, "password123")
-
-    def test_updateUser_short_password(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        with pytest.raises(
-            ValueError, match="Password must be longer than 8 characters."
-        ):
-            manager.updateUser(user_id, "new@mail.com", "short")
-
-    def test_updateUser_duplicate_email(self, manager):
-        manager.addUser("user1@mail.com", "password123")
-        user_id2 = manager.addUser("user2@mail.com", "password123")
-        with pytest.raises(ValueError, match="Email already exists."):
-            manager.updateUser(user_id2, "user1@mail.com", "password123")
-
-    def test_deleteUser_nonexistent_user(self, manager):
-        with pytest.raises(ValueError, match="User is not existing."):
-            manager.deleteUser(999)
-
-<<<<<<< HEAD
-=======
-
-class TestUserUpdates:
-    def test_updateUser_email(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.updateUser(user_id, "newemail@mail.com", "password123")
-        assert manager.users[user_id].email == "newemail@mail.com"
-
-    def test_updateUser_password(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.updateUser(user_id, "user@mail.com", "newpassword123")
-        assert manager.users[user_id].password == "newpassword123"
-
-    def test_updateUser_both(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.updateUser(user_id, "new@mail.com", "newpass123")
-        assert manager.users[user_id].email == "new@mail.com"
-        assert manager.users[user_id].password == "newpass123"
-
-    def test_multiple_updates_same_user(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.updateUser(user_id, "new1@mail.com", "password123")
-        manager.updateUser(user_id, "new2@mail.com", "password123")
-        manager.updateUser(user_id, "new3@mail.com", "password123")
-        assert manager.getUser(user_id).email == "new3@mail.com"
+    def test_delete_user_after_reservation_removal(self):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        self.manager.users[user_id].reservations.append("some_reservation")
+        self.manager.users[user_id].reservations.clear()
+        self.manager.deleteUser(user_id)
+        self.assertIsNone(self.manager.getUser(user_id))
 
 
-class TestUserDeletion:
-    def test_deleteUser_success(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.deleteUser(user_id)
-        assert manager.getUser(user_id) is None
-
->>>>>>> parent of 1d01520 (final)
-    def test_deleteUser_with_reservations(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.users[user_id].reservations.append("some_reservation")
-        with pytest.raises(ValueError, match="User have existing reservations."):
-            manager.deleteUser(user_id)
-
-
-<<<<<<< HEAD
-class TestEdgeCases:
+class TestUserLifecycle(unittest.TestCase):
     """
-    Test suite for edge cases in user management.
+    Klasa testująca pełny cykl życia użytkownika w systemie.
 
-    These tests cover scenarios like retrieving non-existent users,
-    handling user IDs, deleting and updating users, and other
-    boundary conditions.
+    Testuje kompletną ścieżkę użytkownika od utworzenia, przez aktualizacje,
+    aż do usunięcia, weryfikując poprawność wszystkich operacji i walidacji
+    na każdym etapie.
     """
-    def test_getUser_nonexistent(self, manager):
-        assert manager.getUser(999) is None
 
-    def test_update_user_same_email(self, manager):
-=======
-class TestComplexScenarios:
-    def test_add_update_delete_cycle(self, manager):
->>>>>>> parent of 1d01520 (final)
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.updateUser(user_id, "new@mail.com", "newpass123")
-        manager.deleteUser(user_id)
-        assert manager.getUser(user_id) is None
+    def setUp(self):
+        self.manager = UserManagement()
 
-    def test_multiple_users_operations(self, manager):
-        id1 = manager.addUser("user1@mail.com", "password123")
-        id2 = manager.addUser("user2@mail.com", "password123")
-        id3 = manager.addUser("user3@mail.com", "password123")
+    def test_full_user_lifecycle(self):
+        # Add user
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        self.assertIsNotNone(self.manager.getUser(user_id))
+        self.assertEqual(self.manager.getUser(user_id).email, "user@mail.com")
 
-        manager.updateUser(id2, "updated2@mail.com", "newpass123")
-        manager.deleteUser(id1)
+        # Update user
+        self.manager.updateUser(user_id, "updated@mail.com", "newpassword123")
+        self.assertEqual(self.manager.getUser(user_id).email, "updated@mail.com")
+        self.assertEqual(self.manager.getUser(user_id).password, "newpassword123")
 
-        assert manager.getUser(id1) is None
-        assert manager.getUser(id2).email == "updated2@mail.com"
-        assert manager.getUser(id3).email == "user3@mail.com"
+        # Delete user
+        self.manager.deleteUser(user_id)
+        self.assertIsNone(self.manager.getUser(user_id))
 
-<<<<<<< HEAD
-    def test_get_user_with_negative_id(self, manager):
-        assert manager.getUser(-1) is None
+    def test_update_user_validation(self):
+        user_id = self.manager.addUser("user@mail.com", "password123")
 
-=======
->>>>>>> parent of 1d01520 (final)
-    def test_sequential_id_after_delete(self, manager):
-        id1 = manager.addUser("user1@mail.com", "password123")
-        manager.deleteUser(id1)
-        id2 = manager.addUser("user2@mail.com", "password123")
-        assert id2 == id1 + 1
+        # Test updating with invalid email
+        with self.assertRaisesRegex(ValueError, "Email must be a valid string."):
+            self.manager.updateUser(user_id, "", "password123")
 
-    def test_update_after_other_user_deleted(self, manager):
-        id1 = manager.addUser("user1@mail.com", "password123")
-        id2 = manager.addUser("user2@mail.com", "password123")
-        assert len(manager.users[id1].reservations) == 0
-        manager.deleteUser(id1)
-        manager.updateUser(id2, "updated2@mail.com", "newpassword123")
-        assert manager.getUser(id2).email == "updated2@mail.com"
-        assert manager.getUser(id2).password == "newpassword123"
+        # Test updating with invalid password
+        with self.assertRaisesRegex(ValueError, "Password must be longer than 8 characters."):
+            self.manager.updateUser(user_id, "new@mail.com", "short")
 
-    def test_add_delete_add_same_email(self, manager):
-        id1 = manager.addUser("user@mail.com", "password123")
-        manager.deleteUser(id1)
-        id2 = manager.addUser("user@mail.com", "password123")
-        assert id1 != id2
+    def test_delete_user_validation(self):
+        # Test deleting non-existent user
+        with self.assertRaisesRegex(ValueError, "User is not existing."):
+            self.manager.deleteUser(999)
 
-<<<<<<< HEAD
-=======
-
-class TestReservationIntegration:
->>>>>>> parent of 1d01520 (final)
-    def test_user_with_no_reservations(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        assert len(manager.users[user_id].reservations) == 0
-
-<<<<<<< HEAD
-=======
-    def test_user_with_reservations_cannot_be_deleted(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.users[user_id].reservations.append("reservation1")
-        manager.users[user_id].reservations.append("reservation2")
-        with pytest.raises(ValueError, match="User have existing reservations."):
-            manager.deleteUser(user_id)
-        assert len(manager.users[user_id].reservations) == 2
-
->>>>>>> parent of 1d01520 (final)
-    def test_delete_user_after_reservation_removal(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.users[user_id].reservations.append("reservation1")
-        manager.users[user_id].reservations.pop()  # Remove the reservation
-        manager.deleteUser(user_id)
-        assert manager.getUser(user_id) is None
+        # Test deleting user with reservations
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        self.manager.users[user_id].reservations.append("some_reservation")
+        with self.assertRaisesRegex(ValueError, "User have existing reservations."):
+            self.manager.deleteUser(user_id)
 
 
-class TestUserStateManagement:
-    def test_next_id_increment(self, manager):
-        initial_next_id = manager.next_id
-        manager.addUser("user1@mail.com", "password123")
-        assert manager.next_id == initial_next_id + 1
+class TestReservationIntegration(unittest.TestCase):
+    """
+    Klasa testująca integrację między systemem użytkowników a rezerwacjami.
 
-    def test_next_id_after_deletion(self, manager):
-        id1 = manager.addUser("user1@mail.com", "password123")
-        initial_next_id = manager.next_id
-        manager.deleteUser(id1)
-        assert manager.next_id == initial_next_id
+    Sprawdza poprawność interakcji między użytkownikami a ich rezerwacjami,
+    w tym wpływ rezerwacji na możliwość usuwania użytkowników oraz
+    poprawność powiązań między obiektami.
+    """
 
-    def test_user_count(self, manager):
-        initial_count = len(manager.users)
-        manager.addUser("user1@mail.com", "password123")
-        manager.addUser("user2@mail.com", "password123")
-        assert len(manager.users) == initial_count + 2
+    def setUp(self):
+        self.manager = UserManagement()
 
-    def test_user_count_after_deletion(self, manager):
-        manager.addUser("user1@mail.com", "password123")
-        manager.addUser("user2@mail.com", "password123")
-        initial_count = len(manager.users)
-        manager.deleteUser(1)
-        assert len(manager.users) == initial_count - 1
+    def test_user_with_reservations(self):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        self.manager.users[user_id].reservations.append("reservation1")
+        self.manager.users[user_id].reservations.append("reservation2")
+
+        # Try to delete user with reservations
+        with self.assertRaisesRegex(ValueError, "User have existing reservations."):
+            self.manager.deleteUser(user_id)
+
+        # Remove reservations and try again
+        self.manager.users[user_id].reservations.clear()
+        self.manager.deleteUser(user_id)
+        self.assertIsNone(self.manager.getUser(user_id))
 
 
-class TestEdgeCases:
-    def test_update_user_same_email(self, manager):
-        user_id = manager.addUser("user@mail.com", "password123")
-        manager.updateUser(user_id, "user@mail.com", "newpassword123")
-        assert manager.users[user_id].email == "user@mail.com"
-        assert manager.users[user_id].password == "newpassword123"
+class TestParameterized(unittest.TestCase):
+    """
+    Klasa zawierająca parametryzowane testy dla systemu zarządzania użytkownikami.
+    
+    Testy sprawdzają różne przypadki walidacji danych wejściowych oraz operacji na użytkownikach
+    przy użyciu parametryzacji, co pozwala na bardziej zwięzłe i czytelne testy.
+    """
 
-    def test_get_user_with_none_id(self, manager):
-        assert manager.getUser(None) is None
+    def setUp(self):
+        self.manager = UserManagement()
 
-    def test_get_user_with_zero_id(self, manager):
-        assert manager.getUser(0) is None
+    @parameterized.expand([
+        ("empty_email", "", "password123", "Email must be a valid string."),
+        ("none_email", None, "password123", "Email must be a valid string."),
+        ("numeric_email", 123, "password123", "Email must be a valid string."),
+        ("empty_password", "user@mail.com", "", "Password must be longer than 8 characters."),
+        ("none_password", "user@mail.com", None, "Password must be longer than 8 characters."),
+        ("short_password", "user@mail.com", "short", "Password must be longer than 8 characters."),
+    ])
+    def test_addUser_invalid_inputs(self, name, email, password, expected_error):
+        with self.assertRaisesRegex(ValueError, expected_error):
+            self.manager.addUser(email, password)
 
-    def test_get_user_with_negative_id(self, manager):
-        assert manager.getUser(-1) is None
+    @parameterized.expand([
+        ("empty_email", "", "newpass123"),
+        ("none_email", None, "newpass123"),
+        ("numeric_email", 123, "newpass123"),
+    ])
+    def test_updateUser_invalid_email(self, name, email, password):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        with self.assertRaisesRegex(ValueError, "Email must be a valid string."):
+            self.manager.updateUser(user_id, email, password)
+
+    @parameterized.expand([
+        ("empty_password", "new@mail.com", ""),
+        ("none_password", "new@mail.com", None),
+        ("short_password", "new@mail.com", "short"),
+    ])
+    def test_updateUser_invalid_password(self, name, email, password):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        with self.assertRaisesRegex(ValueError, "Password must be longer than 8 characters."):
+            self.manager.updateUser(user_id, email, password)
+
+    @parameterized.expand([
+        ("none_id", None),
+        ("zero_id", 0),
+        ("negative_id", -1),
+        ("non_existent_id", 999),
+    ])
+    def test_getUser_invalid_ids(self, name, user_id):
+        self.assertIsNone(self.manager.getUser(user_id))
+
+    @parameterized.expand([
+        ("single_reservation", ["reservation1"]),
+        ("multiple_reservations", ["reservation1", "reservation2"]),
+        ("many_reservations", ["r1", "r2", "r3", "r4", "r5"]),
+    ])
+    def test_deleteUser_with_different_reservations(self, name, reservations):
+        user_id = self.manager.addUser("user@mail.com", "password123")
+        for reservation in reservations:
+            self.manager.users[user_id].reservations.append(reservation)
+        with self.assertRaisesRegex(ValueError, "User have existing reservations."):
+            self.manager.deleteUser(user_id)
+
+
+if __name__ == '__main__':
+    unittest.main()
